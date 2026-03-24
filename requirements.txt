@@ -1,0 +1,10 @@
+Single-file static website (index.html)
+
+1. Display "hello world" with a large font size (4rem)
+2. Each letter has a distinct color
+3. Each letter dances (bounce + rotate animation, staggered delays)
+4. Background color is light blue (#add8e6)
+5. A round button in the top-right corner cycles the background through three colors:
+   - Light blue (#add8e6)
+   - Light green (#90ee90)
+   - Light pink (#ffb6c1)

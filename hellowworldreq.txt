@@ -1,0 +1,5 @@
+under the current dir
+create a single http file web site
+print "hello world" with reasonable font size
+each letter has a different color
+each letter can dance.

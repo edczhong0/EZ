@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>LocalSubscribedCalendarAccounts</key>
+	<dict/>
+	<key>date</key>
+	<date>2026-03-22T03:01:59Z</date>
+	<key>preferences</key>
+	<dict>
+		<key>defaultCalendarID</key>
+		<string>34B08E50-CD24-4149-AE97-329B22DDA0FD</string>
+		<key>defaultCalendarStoreUID</key>
+		<integer>4</integer>
+	</dict>
+	<key>version</key>
+	<string>3.0</string>
+</dict>
+</plist>

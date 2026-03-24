@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacts</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #add8e6;
+      font-family: 'Arial Black', Arial, sans-serif;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+    }
+
+    #home-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      font-family: 'Arial Black', Arial, sans-serif;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: conic-gradient(#e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6, #e74c3c);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+
+    #home-btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    #bg-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      background: conic-gradient(#e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6, #e74c3c);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    #bg-btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    /* ── Contacts section ── */
+    #contacts-section {
+      width: 100%;
+      max-width: 580px;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+    }
+
+    .search-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+      padding: 24px 28px;
+    }
+
+    .card-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #202124;
+      margin: 0 0 20px;
+      letter-spacing: -0.3px;
+    }
+
+    /* Load card */
+    #load-card .hint {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #70757a;
+      margin-top: 10px;
+      font-family: Roboto, Arial, sans-serif;
+    }
+
+    #load-card .load-row {
+      display: flex;
+      justify-content: center;
+    }
+
+    .load-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid #dfe1e5;
+      border-radius: 24px;
+      padding: 10px 22px;
+      font-size: 0.95rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #3c4043;
+      cursor: pointer;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .load-btn:hover {
+      box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+      border-color: rgba(223,225,229,0);
+    }
+
+    .load-btn svg { flex-shrink: 0; }
+
+    #file-input { display: none; }
+
+    /* Loaded status */
+    #loaded-status {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: #e8f5e9;
+      border-radius: 12px;
+      padding: 8px 14px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      color: #1e7e34;
+      font-family: Roboto, Arial, sans-serif;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    #loaded-status .status-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #loaded-status .reload-link {
+      color: #4285F4;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.82rem;
+    }
+
+    #loaded-status .reload-link:hover { text-decoration: underline; }
+
+    .download-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 5px 14px;
+      font-size: 0.82rem;
+      font-family: Roboto, Arial, sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .download-btn:hover { background: #3367d6; }
+
+    /* Search card */
+    #search-card { display: none; }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      border: 1px solid #dfe1e5;
+      border-radius: 24px;
+      padding: 10px 18px;
+      font-size: 1rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #3c4043;
+      outline: none;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      background: #fff;
+    }
+
+    input[type="text"]:focus {
+      box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+      border-color: rgba(223,225,229,0);
+    }
+
+    /* Results */
+    #results { margin-top: 16px; }
+
+    .results-header {
+      font-size: 0.85rem;
+      color: #70757a;
+      font-family: Roboto, Arial, sans-serif;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+
+    /* Contact cards */
+    .contact-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      border-left: 4px solid #34A853;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .contact-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .contact-card.selected {
+      background: #fffde7;
+      border-left: 4px solid #e74c3c;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    .contact-display { pointer-events: none; }
+
+    .contact-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #202124;
+      font-family: Roboto, Arial, sans-serif;
+      margin-bottom: 4px;
+    }
+
+    .contact-detail {
+      font-size: 0.85rem;
+      color: #5f6368;
+      font-family: Roboto, Arial, sans-serif;
+      margin-bottom: 2px;
+    }
+
+    .contact-org {
+      font-size: 0.82rem;
+      color: #70757a;
+      font-family: Roboto, Arial, sans-serif;
+      margin-top: 4px;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #70757a;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 0.95rem;
+      padding: 20px 0 8px;
+    }
+
+    /* Edit panel */
+    .edit-panel {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e8eaed;
+    }
+
+    .edit-panel label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #70757a;
+      font-family: Roboto, Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      margin-top: 10px;
+    }
+
+    .edit-panel label:first-child { margin-top: 0; }
+
+    .edit-panel input[type="text"],
+    .edit-panel textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #dfe1e5;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #3c4043;
+      outline: none;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      background: #fff;
+      resize: vertical;
+    }
+
+    .edit-panel input[type="text"]:focus,
+    .edit-panel textarea:focus {
+      box-shadow: 0 1px 6px rgba(32,33,36,0.20);
+      border-color: #4285F4;
+    }
+
+    .edit-panel textarea {
+      min-height: 60px;
+    }
+
+    .edit-panel .hint-text {
+      font-size: 0.72rem;
+      color: #9aa0a6;
+      font-family: Roboto, Arial, sans-serif;
+      margin-top: 2px;
+    }
+
+    .edit-panel .btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .save-btn {
+      background: #34A853;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 8px 20px;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .save-btn:hover { background: #2d9247; }
+
+    .cancel-btn {
+      background: #fff;
+      color: #5f6368;
+      border: 1px solid #dfe1e5;
+      border-radius: 16px;
+      padding: 8px 20px;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+    }
+
+    .cancel-btn:hover { box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+  </style>
+</head>
+<body>
+  <a id="home-btn" href="index.html">Home</a>
+  <button id="bg-btn" onclick="cycleBackground()">Change Background</button>
+
+  <div id="contacts-section">
+    <!-- Step 1: load .vcf file -->
+    <div class="search-card" id="load-card">
+      <p class="card-title"><span style="color:#e74c3c">C</span><span style="color:#e67e22">o</span><span style="color:#f1c40f">n</span><span style="color:#2ecc71">t</span><span style="color:#1abc9c">a</span><span style="color:#3498db">c</span><span style="color:#9b59b6">t</span><span style="color:#e91e63">s</span>&nbsp;<span style="color:#ff5722">S</span><span style="color:#00bcd4">e</span><span style="color:#e74c3c">a</span><span style="color:#e67e22">r</span><span style="color:#f1c40f">c</span><span style="color:#2ecc71">h</span></p>
+      <div class="load-row">
+        <button class="load-btn" onclick="openFiles()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Load Contacts (.vcf)
+        </button>
+        <input type="file" id="file-input" accept=".vcf,.vcard" multiple onchange="handleFiles(this)" style="display:none">
+      </div>
+      <p class="hint">macOS Contacts app → File → Export → Export vCard…</p>
+    </div>
+
+    <!-- Step 2: search (shown after loading) -->
+    <div class="search-card" id="search-card">
+      <p class="card-title"><span style="color:#e74c3c">C</span><span style="color:#e67e22">o</span><span style="color:#f1c40f">n</span><span style="color:#2ecc71">t</span><span style="color:#1abc9c">a</span><span style="color:#3498db">c</span><span style="color:#9b59b6">t</span><span style="color:#e91e63">s</span>&nbsp;<span style="color:#ff5722">S</span><span style="color:#00bcd4">e</span><span style="color:#e74c3c">a</span><span style="color:#e67e22">r</span><span style="color:#f1c40f">c</span><span style="color:#2ecc71">h</span></p>
+      <div id="loaded-status">
+        <div class="status-left">
+          <span id="loaded-label">✓ Contacts loaded</span>
+          <a class="reload-link" onclick="reloadContacts()">Load different file</a>
+        </div>
+        <button class="download-btn" id="download-btn" onclick="downloadVCF()">
+          ⬇ Download .vcf
+        </button>
+      </div>
+      <div class="search-row">
+        <input type="text" id="search-input" placeholder="Search by name, phone, or email…" oninput="doSearch()">
+      </div>
+      <div id="results"></div>
+    </div>
+  </div>
+
+  <script>
+    // ── Background cycle ──
+    const bgColors = ['#ff0000','#ff7700','#ffff00','#00cc00','#0000ff','#4b0082','#8b00ff'];
+    let bgCurrent = 0;
+    function cycleBackground() {
+      bgCurrent = (bgCurrent + 1) % bgColors.length;
+      document.body.style.background = bgColors[bgCurrent];
+    }
+
+    // ── State ──
+    let contacts = [];
+    let selectedId = -1;
+    let fileHandle = null;
+
+    // ── File loading ──
+    async function openFiles() {
+      if (window.showOpenFilePicker) {
+        let handles;
+        try {
+          handles = await window.showOpenFilePicker({
+            multiple: true,
+            types: [{ description: 'vCard', accept: { 'text/vcard': ['.vcf', '.vcard'] } }]
+          });
+        } catch (e) { return; } // user cancelled
+        contacts = [];
+        fileHandle = handles.length === 1 ? handles[0] : null;
+        let remaining = handles.length;
+        for (const h of handles) {
+          const file = await h.getFile();
+          const text = await file.text();
+          contacts = contacts.concat(parseVCF(text));
+          if (--remaining === 0) {
+            contacts.forEach((c, i) => { c.id = i; });
+            const firstName = (await handles[0].getFile()).name;
+            const names = handles.length === 1 ? firstName : handles.length + ' files';
+            showSearchCard(names, contacts.length);
+          }
+        }
+      } else {
+        document.getElementById('file-input').click();
+      }
+    }
+
+    function handleFiles(input) {
+      const files = Array.from(input.files);
+      if (!files.length) return;
+      contacts = [];
+      fileHandle = null;
+      let remaining = files.length;
+      for (const file of files) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          contacts = contacts.concat(parseVCF(e.target.result));
+          if (--remaining === 0) {
+            contacts.forEach((c, i) => { c.id = i; });
+            const names = files.length === 1 ? files[0].name : files.length + ' files';
+            showSearchCard(names, contacts.length);
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function reloadContacts() {
+      document.getElementById('search-card').style.display = 'none';
+      document.getElementById('load-card').style.display = 'block';
+      document.getElementById('file-input').value = '';
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('download-btn').style.display = 'none';
+      contacts = [];
+      selectedId = -1;
+      fileHandle = null;
+    }
+
+    function showSearchCard(filename, count) {
+      document.getElementById('load-card').style.display = 'none';
+      const sc = document.getElementById('search-card');
+      sc.style.display = 'block';
+      const ls = document.getElementById('loaded-status');
+      ls.style.display = 'flex';
+      document.getElementById('loaded-label').textContent =
+        '✓ ' + count + ' contact' + (count !== 1 ? 's' : '') + ' loaded from ' + filename;
+      doSearch();
+    }
+
+    // ── vCard parser ──
+    function parseVCF(text) {
+      text = text.replace(/\r\n[ \t]/g, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const results = [];
+      const cards = text.split(/BEGIN:VCARD/i);
+      for (let i = 1; i < cards.length; i++) {
+        const block = cards[i];
+        const lines = block.split('\n');
+        let fn = '', phones = [], emails = [], org = '';
+
+        for (const line of lines) {
+          const colon = line.indexOf(':');
+          if (colon === -1) continue;
+          const propRaw = line.slice(0, colon).toUpperCase();
+          const value = decodeVCFValue(line.slice(colon + 1).trim());
+          const propName = propRaw.split(';')[0];
+
+          if (propName === 'FN' && !fn) {
+            fn = value;
+          } else if (propName === 'N' && !fn) {
+            const parts = value.split(';');
+            const last = parts[0] || '', first = parts[1] || '';
+            fn = (first + ' ' + last).trim();
+          } else if (propName === 'TEL') {
+            const phone = value.replace(/[^\d+\-\(\)\s\.ext]/gi, '').trim();
+            if (phone) phones.push(phone);
+          } else if (propName === 'EMAIL') {
+            if (value) emails.push(value);
+          } else if (propName === 'ORG' && !org) {
+            org = value.split(';')[0];
+          }
+        }
+
+        if (fn || phones.length || emails.length) {
+          results.push({ fn, phones, emails, org, id: -1 });
+        }
+      }
+      return results;
+    }
+
+    function decodeVCFValue(val) {
+      return val
+        .replace(/=\r?\n/g, '')
+        .replace(/\\n/gi, ' ')
+        .replace(/\\,/g, ',')
+        .replace(/\\;/g, ';')
+        .replace(/\\\\/g, '\\');
+    }
+
+    // ── Search ──
+    function doSearch() {
+      const query = (document.getElementById('search-input').value || '').trim().toLowerCase();
+      if (!query) {
+        renderResults(contacts, '');
+        return;
+      }
+      const matched = contacts.filter(c =>
+        c.fn.toLowerCase().includes(query) ||
+        c.phones.some(p => p.toLowerCase().includes(query)) ||
+        c.emails.some(e => e.toLowerCase().includes(query))
+      );
+      renderResults(matched, query);
+    }
+
+    function renderResults(list, query) {
+      const container = document.getElementById('results');
+      const countLabel = query
+        ? list.length + ' result' + (list.length !== 1 ? 's' : '') + ' for "' + escHtml(query) + '"'
+        : list.length + ' contact' + (list.length !== 1 ? 's' : '');
+
+      if (list.length === 0) {
+        container.innerHTML = '<p class="no-results">No contacts found.</p>';
+        selectedId = -1;
+        return;
+      }
+
+      let html = '<p class="results-header">' + countLabel + '</p>';
+      for (const c of list) {
+        const sel = c.id === selectedId ? ' selected' : '';
+        html += '<div class="contact-card' + sel + '" data-id="' + c.id + '">';
+        html += '<div class="contact-display">';
+        html += '<div class="contact-name">' + escHtml(c.fn || '(No name)') + '</div>';
+        for (const p of c.phones) {
+          html += '<div class="contact-detail">📞 ' + escHtml(p) + '</div>';
+        }
+        for (const e of c.emails) {
+          html += '<div class="contact-detail">✉️ ' + escHtml(e) + '</div>';
+        }
+        if (c.org) {
+          html += '<div class="contact-org">🏢 ' + escHtml(c.org) + '</div>';
+        }
+        html += '</div>'; // .contact-display
+        html += '</div>'; // .contact-card
+      }
+
+      container.innerHTML = html;
+
+      // Attach click listeners and restore open edit panel
+      container.querySelectorAll('.contact-card').forEach(card => {
+        const id = parseInt(card.dataset.id, 10);
+        if (id === selectedId) {
+          appendEditPanel(card, id);
+        }
+        card.addEventListener('click', e => {
+          // Don't toggle if user clicked inside the edit panel itself
+          if (e.target.closest('.edit-panel')) return;
+          selectCard(card, id);
+        });
+      });
+    }
+
+    // ── Select / deselect ──
+    function selectCard(cardEl, id) {
+      const alreadySelected = cardEl.classList.contains('selected');
+
+      // Deselect any previously selected card
+      document.querySelectorAll('.contact-card.selected').forEach(c => {
+        c.classList.remove('selected');
+        const panel = c.querySelector('.edit-panel');
+        if (panel) panel.remove();
+      });
+      selectedId = -1;
+
+      if (!alreadySelected) {
+        cardEl.classList.add('selected');
+        selectedId = id;
+        appendEditPanel(cardEl, id);
+      }
+    }
+
+    function appendEditPanel(cardEl, id) {
+      // Remove any existing panel first
+      const existing = cardEl.querySelector('.edit-panel');
+      if (existing) existing.remove();
+
+      const c = contacts[id];
+      if (!c) return;
+
+      const panel = document.createElement('div');
+      panel.className = 'edit-panel';
+
+      // Stop card-click from firing when clicking inside panel
+      panel.addEventListener('click', e => e.stopPropagation());
+
+      // Full Name
+      const nameLabel = makeLabel('Full Name');
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = c.fn;
+
+      // Phones
+      const phoneLabel = makeLabel('Phone Numbers');
+      const phoneHint = makeHint('One per line');
+      const phoneArea = document.createElement('textarea');
+      phoneArea.value = c.phones.join('\n');
+
+      // Emails
+      const emailLabel = makeLabel('Email Addresses');
+      const emailHint = makeHint('One per line');
+      const emailArea = document.createElement('textarea');
+      emailArea.value = c.emails.join('\n');
+
+      // Org
+      const orgLabel = makeLabel('Organization');
+      const orgInput = document.createElement('input');
+      orgInput.type = 'text';
+      orgInput.value = c.org;
+
+      // Buttons
+      const btnRow = document.createElement('div');
+      btnRow.className = 'btn-row';
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'cancel-btn';
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.addEventListener('click', () => {
+        cardEl.classList.remove('selected');
+        panel.remove();
+        selectedId = -1;
+      });
+
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'save-btn';
+      saveBtn.textContent = 'Save';
+      saveBtn.addEventListener('click', () => saveContact(id, nameInput, phoneArea, emailArea, orgInput));
+
+      btnRow.appendChild(cancelBtn);
+      btnRow.appendChild(saveBtn);
+
+      panel.appendChild(nameLabel);
+      panel.appendChild(nameInput);
+      panel.appendChild(phoneLabel);
+      panel.appendChild(phoneHint);
+      panel.appendChild(phoneArea);
+      panel.appendChild(emailLabel);
+      panel.appendChild(emailHint);
+      panel.appendChild(emailArea);
+      panel.appendChild(orgLabel);
+      panel.appendChild(orgInput);
+      panel.appendChild(btnRow);
+
+      cardEl.appendChild(panel);
+      nameInput.focus();
+    }
+
+    function makeLabel(text) {
+      const el = document.createElement('label');
+      el.textContent = text;
+      return el;
+    }
+
+    function makeHint(text) {
+      const el = document.createElement('div');
+      el.className = 'hint-text';
+      el.textContent = text;
+      return el;
+    }
+
+    // ── Save ──
+    async function saveContact(id, nameInput, phoneArea, emailArea, orgInput) {
+      const c = contacts[id];
+      if (!c) return;
+
+      c.fn = nameInput.value.trim();
+      c.phones = phoneArea.value.split('\n').map(s => s.trim()).filter(Boolean);
+      c.emails = emailArea.value.split('\n').map(s => s.trim()).filter(Boolean);
+      c.org = orgInput.value.trim();
+
+      const dlBtn = document.getElementById('download-btn');
+      dlBtn.style.display = 'flex';
+
+      if (fileHandle) {
+        try {
+          const writable = await fileHandle.createWritable();
+          await writable.write(buildVCF());
+          await writable.close();
+        } catch (e) {
+          downloadVCF(); // fallback if write permission denied
+        }
+      } else {
+        downloadVCF();
+      }
+
+      // Close the card and return focus to search box
+      selectedId = -1;
+      doSearch();
+      document.getElementById('search-input').focus();
+    }
+
+    // ── vCard serializer ──
+    function buildVCF() {
+      return contacts.map(c => {
+        const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
+        lines.push('FN:' + vcfEscape(c.fn));
+        // N field: split fn into first/last on last space
+        const spaceIdx = c.fn.lastIndexOf(' ');
+        const first = spaceIdx >= 0 ? c.fn.slice(0, spaceIdx) : c.fn;
+        const last  = spaceIdx >= 0 ? c.fn.slice(spaceIdx + 1) : '';
+        lines.push('N:' + vcfEscape(last) + ';' + vcfEscape(first) + ';;;');
+        for (const p of c.phones) lines.push('TEL;TYPE=VOICE:' + p);
+        for (const e of c.emails) lines.push('EMAIL:' + e);
+        if (c.org) lines.push('ORG:' + vcfEscape(c.org));
+        lines.push('END:VCARD');
+        return lines.join('\r\n');
+      }).join('\r\n');
+    }
+
+    function vcfEscape(s) {
+      return (s || '').replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n');
+    }
+
+    function downloadVCF() {
+      const content = buildVCF();
+      const blob = new Blob([content], { type: 'text/vcard;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'contacts_edited.vcf';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>

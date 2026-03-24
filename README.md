@@ -1,2 +1,3 @@
 # EZ
 store proj 
+go

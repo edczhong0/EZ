@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #add8e6;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      padding: 2rem 1rem;
+    }
+
+    #page-wrap {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 2rem;
+      max-width: 98vw;
+    }
+
+    /* ── Left: product showcase ── */
+    #showcase {
+      width: 460px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      background: #111;
+      display: none;
+      border-radius: 28px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+    }
+
+    #showcase .sc-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+    }
+    #showcase .sc-media.active { opacity: 1; }
+
+    #showcase .sc-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.72) 100%);
+      pointer-events: none;
+    }
+
+    #showcase .sc-text {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 28px 32px 24px;
+      color: #fff;
+    }
+    #showcase .sc-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 6px;
+    }
+    #showcase .sc-desc {
+      font-size: 1.05rem;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+    #showcase .sc-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .sc-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    .sc-dot.active { background: #fff; }
+
+    /* ── Right: login card panel ── */
+    #login-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      padding: 36px 48px 32px;
+      width: 460px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 900;
+      font-family: 'Arial Black', Arial, sans-serif;
+      margin-bottom: 6px;
+    }
+    .logo span:nth-child(1)  { color: #e74c3c; }
+    .logo span:nth-child(2)  { color: #e67e22; }
+    .logo span:nth-child(3)  { color: #f1c40f; }
+    .logo span:nth-child(4)  { color: #2ecc71; }
+    .logo span:nth-child(5)  { color: #1abc9c; }
+    .logo span.sp            { display: inline-block; width: 0.5em; }
+    .logo span:nth-child(7)  { color: #3498db; }
+    .logo span:nth-child(8)  { color: #9b59b6; }
+    .logo span:nth-child(9)  { color: #e91e63; }
+    .logo span:nth-child(10) { color: #ff5722; }
+    .logo span:nth-child(11) { color: #00bcd4; }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #70757a;
+      margin-bottom: 28px;
+      font-family: Roboto, Arial, sans-serif;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e8eaed;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 10px 4px;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #70757a;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .tab-btn.active { color: #4285F4; border-bottom-color: #4285F4; font-weight: 600; }
+    .tab-btn:hover:not(.active) { color: #202124; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      color: #5f6368;
+      margin-bottom: 5px;
+      font-family: Roboto, Arial, sans-serif;
+    }
+    .field input {
+      width: 100%;
+      border: 1px solid #dfe1e5;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 0.95rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #202124;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus {
+      border-color: #4285F4;
+      box-shadow: 0 0 0 3px rgba(66,133,244,0.12);
+    }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 42px; }
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9aa0a6;
+      font-size: 1rem;
+      padding: 0;
+      line-height: 1;
+    }
+    .pw-toggle:hover { color: #5f6368; }
+
+    .submit-btn {
+      width: 100%;
+      background: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 1rem;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s;
+    }
+    .submit-btn:hover { background: #3367d6; }
+    .submit-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .msg {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      display: none;
+    }
+    .msg.error   { background: #fce8e6; color: #c5221f; }
+    .msg.success { background: #e6f4ea; color: #1e7e34; }
+    .msg.info    { background: #e8f0fe; color: #1a73e8; }
+
+    .reset-link-box {
+      margin-top: 12px;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      font-family: Roboto, monospace;
+      word-break: break-all;
+      display: none;
+      color: #333;
+    }
+
+    /* Mobile: stack vertically */
+    @media (max-width: 700px) {
+      #page-wrap { flex-direction: column; gap: 1rem; }
+      #showcase { display: block !important; width: 100%; height: 40vw; min-height: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="page-wrap">
+
+<!-- Left: product showcase (shown only when products have media) -->
+<div id="showcase">
+  <div class="sc-overlay"></div>
+  <div class="sc-text">
+    <div class="sc-label" id="sc-label"></div>
+    <div class="sc-desc" id="sc-desc"></div>
+    <div class="sc-dots" id="sc-dots"></div>
+  </div>
+</div>
+
+<!-- Right: login card -->
+<div id="login-panel">
+<div class="card">
+  <div class="logo">
+    <span>h</span><span>e</span><span>l</span><span>l</span><span>o</span><span class="sp"></span><span>w</span><span>o</span><span>r</span><span>l</span><span>d</span>
+  </div>
+  <p class="subtitle">Sign in to continue</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('login')">Sign In</button>
+    <button class="tab-btn"       onclick="showTab('register')">Register</button>
+    <button class="tab-btn"       onclick="showTab('forgot')">Forgot Password</button>
+  </div>
+
+  <!-- Login -->
+  <div class="tab-panel active" id="tab-login">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter') doLogin()">
+        <button class="pw-toggle" onclick="togglePw('login-password', this)">👁</button>
+      </div>
+    </div>
+    <button class="submit-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="msg" id="login-msg"></div>
+  </div>
+
+  <!-- Register -->
+  <div class="tab-panel" id="tab-register">
+    <div class="field">
+      <label>Email (used as username)</label>
+      <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password (min 6 characters)</label>
+      <div class="pw-wrap">
+        <input type="password" id="reg-password" placeholder="Password" autocomplete="new-password">
+        <button class="pw-toggle" onclick="togglePw('reg-password', this)">👁</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Confirm Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="reg-confirm" placeholder="Confirm password" autocomplete="new-password"
+               onkeydown="if(event.key==='Enter') doRegister()">
+        <button class="pw-toggle" onclick="togglePw('reg-confirm', this)">👁</button>
+      </div>
+    </div>
+    <button class="submit-btn" id="reg-btn" onclick="doRegister()">Create Account</button>
+    <div class="msg" id="reg-msg"></div>
+  </div>
+
+  <!-- Forgot Password -->
+  <div class="tab-panel" id="tab-forgot">
+    <div class="field">
+      <label>Enter your email address</label>
+      <input type="email" id="forgot-email" placeholder="you@example.com" autocomplete="email"
+             onkeydown="if(event.key==='Enter') doForgot()">
+    </div>
+    <button class="submit-btn" id="forgot-btn" onclick="doForgot()">Send Reset Link</button>
+    <div class="msg" id="forgot-msg"></div>
+    <div class="reset-link-box" id="reset-link-box"></div>
+  </div>
+
+  <!-- Reset Password (shown when ?reset=token in URL) -->
+  <div class="tab-panel" id="tab-reset">
+    <p style="font-size:0.9rem;color:#5f6368;margin:0 0 16px;font-family:Roboto,Arial,sans-serif;">
+      Enter your new password below.
+    </p>
+    <div class="field">
+      <label>New Password (min 6 characters)</label>
+      <div class="pw-wrap">
+        <input type="password" id="reset-password" placeholder="New password" autocomplete="new-password">
+        <button class="pw-toggle" onclick="togglePw('reset-password', this)">👁</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Confirm New Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="reset-confirm" placeholder="Confirm new password" autocomplete="new-password"
+               onkeydown="if(event.key==='Enter') doReset()">
+        <button class="pw-toggle" onclick="togglePw('reset-confirm', this)">👁</button>
+      </div>
+    </div>
+    <button class="submit-btn" id="reset-btn" onclick="doReset()">Set New Password</button>
+    <div class="msg" id="reset-msg"></div>
+  </div>
+</div>
+</div><!-- /login-panel -->
+</div><!-- /page-wrap -->
+
+<script>
+  const API = 'http://localhost:5001';
+  let resetToken = null;
+
+  // ── Product showcase ──
+  const VIDEO_EXTS = new Set(['mp4','mov','avi','mkv','webm','m4v']);
+  let scProducts = [], scIndex = 0, scTimer = null;
+
+  function isVid(url) {
+    return url && VIDEO_EXTS.has(url.split('?')[0].split('.').pop().toLowerCase());
+  }
+
+  async function loadShowcase() {
+    try {
+      const r = await fetch(`${API}/products/data`);
+      if (!r.ok) return;
+      const all = await r.json();
+      scProducts = all.filter(p => p.image);
+      if (!scProducts.length) return;
+
+      const showcase = document.getElementById('showcase');
+      showcase.style.display = 'block';
+
+      // Build media elements (one per product, stacked, cross-faded)
+      scProducts.forEach((p, i) => {
+        let el;
+        if (isVid(p.image)) {
+          el = document.createElement('video');
+          el.src = p.image;
+          el.autoplay = true;
+          el.muted = true;
+          el.loop = true;
+          el.playsInline = true;
+        } else {
+          el = document.createElement('img');
+          el.src = p.image;
+        }
+        el.className = 'sc-media' + (i === 0 ? ' active' : '');
+        showcase.insertBefore(el, showcase.querySelector('.sc-overlay'));
+      });
+
+      // Dots
+      const dotsEl = document.getElementById('sc-dots');
+      if (scProducts.length > 1) {
+        scProducts.forEach((_, i) => {
+          const d = document.createElement('div');
+          d.className = 'sc-dot' + (i === 0 ? ' active' : '');
+          d.onclick = () => scGoTo(i);
+          dotsEl.appendChild(d);
+        });
+      }
+
+      scShowSlide(0);
+      if (scProducts.length > 1) scTimer = setInterval(() => scGoTo((scIndex + 1) % scProducts.length), 4000);
+    } catch(e) {}
+  }
+
+  function scGoTo(i) {
+    clearInterval(scTimer);
+    scShowSlide(i);
+    scTimer = setInterval(() => scGoTo((scIndex + 1) % scProducts.length), 4000);
+  }
+
+  function scShowSlide(i) {
+    scIndex = i;
+    const p = scProducts[i];
+    document.getElementById('sc-label').textContent = `Product ${i + 1}`;
+    document.getElementById('sc-desc').textContent = p.description || '';
+    document.querySelectorAll('.sc-media').forEach((el, j) => el.classList.toggle('active', j === i));
+    document.querySelectorAll('.sc-dot').forEach((d, j) => d.classList.toggle('active', j === i));
+  }
+
+  // ── Boot ──
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    resetToken = params.get('reset');
+    if (resetToken) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.style.display = 'none');
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-reset').classList.add('active');
+      await loadShowcase();
+      return;
+    }
+    try {
+      const r = await fetch(`${API}/auth/me`, { credentials: 'include' });
+      if (r.ok) { window.location.href = 'http://localhost:5001/'; return; }
+    } catch (e) {}
+    await loadShowcase();
+  })();
+
+  function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', ['login','register','forgot'][i] === name);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  function togglePw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁'; }
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'msg ' + type;
+    el.style.display = 'block';
+  }
+
+  async function doLogin() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email || !password) { showMsg('login-msg', 'Please fill in all fields.', 'error'); return; }
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      const r    = await fetch(`${API}/auth/login`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await r.json();
+      if (r.ok) { window.location.href = 'http://localhost:5001/'; return; }
+      showMsg('login-msg', data.error || 'Login failed.', 'error');
+    } catch (e) {
+      showMsg('login-msg', 'Cannot reach server. Make sure server.py is running.', 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+
+  async function doRegister() {
+    const email    = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirm  = document.getElementById('reg-confirm').value;
+    if (!email || !password) { showMsg('reg-msg', 'Please fill in all fields.', 'error'); return; }
+    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) { showMsg('reg-msg', 'Please enter a valid email address.', 'error'); return; }
+    if (password !== confirm) { showMsg('reg-msg', 'Passwords do not match.', 'error'); return; }
+    if (password.length < 6) { showMsg('reg-msg', 'Password must be at least 6 characters.', 'error'); return; }
+    const btn = document.getElementById('reg-btn');
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    try {
+      const r    = await fetch(`${API}/auth/register`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await r.json();
+      if (r.ok) { window.location.href = 'http://localhost:5001/'; return; }
+      showMsg('reg-msg', data.error || 'Registration failed.', 'error');
+    } catch (e) {
+      showMsg('reg-msg', 'Cannot reach server. Make sure server.py is running.', 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+
+  async function doForgot() {
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) { showMsg('forgot-msg', 'Please enter your email.', 'error'); return; }
+    const btn = document.getElementById('forgot-btn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const r    = await fetch(`${API}/auth/forgot`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await r.json();
+      showMsg('forgot-msg', data.message || 'Reset link sent! Check your email.', 'success');
+      if (data.reset_link) {
+        const box = document.getElementById('reset-link-box');
+        box.textContent = '⚠️ Email not configured — use this link: ' + data.reset_link;
+        box.style.display = 'block';
+      }
+    } catch (e) {
+      showMsg('forgot-msg', 'Cannot reach server.', 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Send Reset Link';
+  }
+
+  async function doReset() {
+    const password = document.getElementById('reset-password').value;
+    const confirm  = document.getElementById('reset-confirm').value;
+    if (!password) { showMsg('reset-msg', 'Please enter a new password.', 'error'); return; }
+    if (password !== confirm) { showMsg('reset-msg', 'Passwords do not match.', 'error'); return; }
+    if (password.length < 6) { showMsg('reset-msg', 'Password must be at least 6 characters.', 'error'); return; }
+    const btn = document.getElementById('reset-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      const r    = await fetch(`${API}/auth/reset`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: resetToken, password }),
+      });
+      const data = await r.json();
+      if (r.ok) {
+        showMsg('reset-msg', 'Password updated! Redirecting to login…', 'success');
+        setTimeout(() => window.location.href = '/login.html', 1500);
+        return;
+      }
+      showMsg('reset-msg', data.error || 'Reset failed.', 'error');
+    } catch (e) {
+      showMsg('reset-msg', 'Cannot reach server.', 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Set New Password';
+  }
+</script>
+</body>
+</html>

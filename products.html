@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products</title>
+  <script>document.documentElement.style.visibility='hidden';</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #add8e6;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      padding: 5rem 1rem 3rem;
+    }
+
+    #home-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: conic-gradient(#e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6, #e74c3c);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s;
+      text-align: center;
+    }
+    #home-btn:active { transform: scale(0.96); }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #202124;
+      margin: 0 0 2rem;
+      letter-spacing: -0.3px;
+    }
+
+    .products-grid {
+      display: flex;
+      gap: 2rem;
+      width: 100%;
+      max-width: 860px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      padding: 24px;
+      flex: 1;
+      min-width: 280px;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .product-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #9aa0a6;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .photo-area {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #f1f3f4;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      display: none;
+    }
+
+    .photo-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #bdc1c6;
+    }
+    .photo-placeholder span { font-size: 2.5rem; }
+    .photo-placeholder p {
+      font-size: 0.82rem;
+      color: #9aa0a6;
+      margin: 0;
+      font-family: Roboto, Arial, sans-serif;
+    }
+
+    .load-btn {
+      display: none; /* shown only for admin */
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid #dfe1e5;
+      border-radius: 20px;
+      padding: 9px 18px;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #3c4043;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+      width: fit-content;
+    }
+    .load-btn:hover {
+      box-shadow: 0 1px 6px rgba(32,33,36,0.2);
+    }
+
+    .description-area {
+      width: 100%;
+    }
+    .description-area label {
+      display: block;
+      font-size: 0.75rem;
+      color: #9aa0a6;
+      font-family: Roboto, Arial, sans-serif;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .description-area textarea {
+      width: 100%;
+      min-height: 90px;
+      border: 1px solid #dfe1e5;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #202124;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: #fff;
+    }
+    .description-area textarea:focus {
+      border-color: #4285F4;
+      box-shadow: 0 0 0 3px rgba(66,133,244,0.1);
+    }
+    .description-area textarea[readonly] {
+      background: #f8f9fa;
+      color: #5f6368;
+      cursor: default;
+      border-color: transparent;
+    }
+
+    #save-row {
+      display: none; /* shown only for admin */
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    #save-btn {
+      background: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 11px 32px;
+      font-size: 0.95rem;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #save-btn:hover { background: #3367d6; }
+    #save-btn:disabled { opacity: 0.6; cursor: default; }
+
+    /* Comments */
+    .comment-section {
+      margin-top: 20px;
+      border-top: 1px solid #e8eaed;
+      padding-top: 16px;
+    }
+    .comment-heading {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #5f6368;
+      margin-bottom: 12px;
+      font-family: Roboto, Arial, sans-serif;
+    }
+    .comment-list { margin-bottom: 14px; }
+    .comment-item {
+      padding: 10px 12px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .comment-author {
+      font-size: 0.75rem;
+      color: #9aa0a6;
+      font-family: Roboto, Arial, sans-serif;
+      margin-bottom: 3px;
+    }
+    .comment-body {
+      font-size: 0.88rem;
+      color: #202124;
+      font-family: Roboto, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    .comment-input-wrap {
+      position: relative;
+    }
+    .comment-input-wrap textarea {
+      width: 100%;
+      min-height: 70px;
+      border: 1px solid #dfe1e5;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #202124;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .comment-input-wrap textarea:focus {
+      border-color: #4285F4;
+      box-shadow: 0 0 0 3px rgba(66,133,244,0.1);
+    }
+    .comment-locked {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8f9fa;
+      border: 1px dashed #dfe1e5;
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      color: #9aa0a6;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      transition: background 0.15s;
+    }
+    .comment-locked:hover { background: #f1f3f4; }
+    .comment-post-btn {
+      margin-top: 8px;
+      background: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .comment-post-btn:hover { background: #3367d6; }
+    .comment-post-btn:disabled { opacity: 0.6; cursor: default; }
+    .comment-credit-note {
+      font-size: 0.78rem;
+      color: #9aa0a6;
+      font-family: Roboto, Arial, sans-serif;
+      margin: 6px 0 4px;
+    }
+    .comment-credit-note .ccn-amt { color: #1a73e8; font-weight: 600; }
+
+    /* Credit balance badge */
+    #credit-badge {
+      position: fixed;
+      top: 1.4rem;
+      right: 1.5rem;
+      background: #fff;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-family: Roboto, Arial, sans-serif;
+      font-weight: 600;
+      color: #202124;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+    }
+    #credit-badge:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+    #credit-badge .credit-amt { color: #1a73e8; }
+    #credit-badge .add-btn {
+      background: #e8f0fe;
+      color: #1a73e8;
+      border: none;
+      border-radius: 12px;
+      padding: 3px 9px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: Roboto, Arial, sans-serif;
+    }
+    #credit-badge .add-btn:hover { background: #d2e3fc; }
+
+    /* Credits / Payment modal */
+    #pay-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #pay-modal-overlay.show { display: flex; }
+    #pay-modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 32px 36px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #pay-modal h2 { font-size: 1.3rem; margin: 0 0 6px; color: #202124; }
+    #pay-modal .modal-sub { font-size: 0.85rem; color: #5f6368; margin: 0 0 6px; font-family: Roboto, Arial, sans-serif; }
+    #pay-modal .modal-balance { font-size: 0.88rem; color: #1a73e8; font-weight: 600; margin: 0 0 20px; font-family: Roboto, Arial, sans-serif; }
+    .credit-amounts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .credit-amt-btn {
+      background: #f8f9fa;
+      border: 2px solid #e8eaed;
+      border-radius: 12px;
+      padding: 12px 8px;
+      font-size: 0.95rem;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      color: #202124;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .credit-amt-btn:hover { border-color: #4285F4; background: #e8f0fe; color: #1a73e8; }
+    .credit-amt-btn.selected { border-color: #4285F4; background: #e8f0fe; color: #1a73e8; }
+    .credit-amt-btn small { display: block; font-size: 0.72rem; color: #9aa0a6; font-weight: 400; margin-top: 2px; }
+    .credit-amt-btn.selected small { color: #4285F4; }
+    #pay-confirm-btn {
+      display: block;
+      width: 100%;
+      background: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 1rem;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background 0.15s;
+    }
+    #pay-confirm-btn:hover { background: #3367d6; }
+    #pay-confirm-btn:disabled { opacity: 0.6; cursor: default; }
+    #pay-modal .cancel-btn {
+      background: none;
+      border: none;
+      color: #9aa0a6;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: Roboto, Arial, sans-serif;
+    }
+    #pay-modal .cancel-btn:hover { color: #5f6368; }
+
+    /* File browser modal */
+    #fb-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    #fb-overlay.show { display: flex; }
+    #fb-modal {
+      background: #fff;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 620px;
+      height: 82vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+      overflow: hidden;
+    }
+    #fb-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #e8eaed;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #fb-header h3 { margin: 0; font-size: 1rem; color: #202124; flex: 1; }
+    #fb-back {
+      background: #f1f3f4;
+      border: none;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      color: #202124;
+    }
+    #fb-back:disabled { opacity: 0.35; cursor: default; }
+    #fb-quicklinks {
+      display: flex;
+      gap: 6px;
+      padding: 8px 16px;
+      overflow-x: auto;
+      border-bottom: 1px solid #e8eaed;
+      flex-shrink: 0;
+    }
+    #fb-quicklinks button {
+      white-space: nowrap;
+      background: #f1f3f4;
+      border: none;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      color: #202124;
+      flex-shrink: 0;
+    }
+    #fb-quicklinks button:hover { background: #e8eaed; }
+    #fb-filter {
+      display: flex;
+      gap: 6px;
+      padding: 6px 16px;
+      border-bottom: 1px solid #f1f3f4;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .fb-filter-btn {
+      background: #f1f3f4;
+      border: 1.5px solid transparent;
+      border-radius: 20px;
+      padding: 3px 11px;
+      font-size: 0.75rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      color: #5f6368;
+    }
+    .fb-filter-btn:hover { background: #e8eaed; }
+    .fb-filter-btn.active { background: #e8f0fe; border-color: #4285F4; color: #1a73e8; font-weight: 600; }
+    #fb-path {
+      padding: 6px 20px 8px;
+      font-size: 0.72rem;
+      color: #9aa0a6;
+      font-family: Roboto, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    #fb-grid {
+      flex: 1;
+      min-height: 0;
+      overflow-y: scroll;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      align-content: start;
+    }
+    #fb-grid::-webkit-scrollbar { width: 8px; }
+    #fb-grid::-webkit-scrollbar-track { background: #f1f3f4; border-radius: 4px; }
+    #fb-grid::-webkit-scrollbar-thumb { background: #bdc1c6; border-radius: 4px; }
+    #fb-grid::-webkit-scrollbar-thumb:hover { background: #9aa0a6; }
+    .fb-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 6px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .fb-item:hover { background: #f1f3f4; }
+    .fb-item.selected { border-color: #4285F4; background: #e8f0fe; }
+    .fb-item .fb-icon { font-size: 2.8rem; line-height: 1; }
+    .fb-item .fb-name {
+      font-size: 0.68rem;
+      color: #5f6368;
+      font-family: Roboto, Arial, sans-serif;
+      text-align: center;
+      word-break: break-all;
+      max-height: 2.6em;
+      overflow: hidden;
+    }
+    .fb-item .fb-thumb {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #f1f3f4;
+    }
+    #fb-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #e8eaed;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    #fb-select-btn {
+      background: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 22px;
+      font-size: 0.9rem;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #fb-select-btn:disabled { opacity: 0.4; cursor: default; }
+    #fb-select-btn:not(:disabled):hover { background: #3367d6; }
+    #fb-cancel-btn {
+      background: none;
+      border: 1px solid #dfe1e5;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 0.9rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      color: #5f6368;
+    }
+    #fb-cancel-btn:hover { background: #f1f3f4; }
+    #fb-empty {
+      grid-column: 1/-1;
+      text-align: center;
+      color: #9aa0a6;
+      font-size: 0.85rem;
+      font-family: Roboto, Arial, sans-serif;
+      padding: 24px 0;
+    }
+
+    /* View toggle */
+    .fb-view-btn {
+      background: none;
+      border: 1.5px solid #dfe1e5;
+      border-radius: 8px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      color: #5f6368;
+    }
+    .fb-view-btn.active { background: #e8f0fe; border-color: #4285F4; color: #1a73e8; }
+    .fb-view-btn:hover:not(.active) { background: #f1f3f4; }
+
+    /* List view */
+    #fb-grid.list-mode {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px 16px;
+    }
+    .fb-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: background 0.1s;
+    }
+    .fb-row:hover { background: #f1f3f4; }
+    .fb-row.selected { border-color: #4285F4; background: #e8f0fe; }
+    .fb-row-thumb {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: #f1f3f4;
+    }
+    .fb-row-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; width: 36px; text-align: center; }
+    .fb-row-name {
+      flex: 1;
+      font-size: 0.85rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #202124;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .fb-row-kind {
+      font-size: 0.7rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #9aa0a6;
+      background: #f1f3f4;
+      border-radius: 6px;
+      padding: 2px 7px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .fb-row-date {
+      font-size: 0.78rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #9aa0a6;
+      flex-shrink: 0;
+      min-width: 130px;
+      text-align: right;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #202124;
+      color: #fff;
+      border-radius: 20px;
+      padding: 10px 24px;
+      font-size: 0.9rem;
+      font-family: Roboto, Arial, sans-serif;
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      pointer-events: none;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+<a id="home-btn" href="http://localhost:5001/">Home</a>
+
+<div id="credit-badge" onclick="showPayModal()">
+  💰 Credits: <span class="credit-amt" id="credit-display">…</span>
+  <button class="add-btn" onclick="event.stopPropagation(); showPayModal()">+ Add</button>
+</div>
+
+<h1>Products</h1>
+
+<div class="products-grid" id="products-grid">
+
+  <!-- Product 1 -->
+  <div class="product-card" id="card-0">
+    <div class="product-label">Product 1</div>
+    <div class="photo-area" id="photo-area-0">
+      <img id="photo-img-0" alt="Product 1">
+      <video id="photo-vid-0" controls style="display:none;width:100%;height:100%;object-fit:cover;border-radius:16px;"></video>
+      <div class="photo-placeholder" id="placeholder-0">
+        <span>📦</span>
+        <p>No photo yet</p>
+      </div>
+    </div>
+    <button class="load-btn admin-only" onclick="openFileBrowser(0)">🗂 Browse Files</button>
+    <button class="load-btn admin-only" onclick="triggerUpload(0)" style="margin-top:6px;font-size:0.75rem;color:#9aa0a6">📁 Other folder…</button>
+    <input type="file" id="file-input-0" accept="image/*,video/*,.heic,.heif,.bmp,.tiff,.tif" style="display:none" onchange="uploadPhoto(0, this)">
+    <div class="description-area">
+      <label>Description</label>
+      <textarea id="desc-0" placeholder="Enter product description…" readonly></textarea>
+    </div>
+    <div class="comment-section">
+      <div class="comment-heading">💬 Comments</div>
+      <div class="comment-list" id="comments-0"></div>
+      <div class="comment-input-wrap" id="comment-input-wrap-0">
+        <div class="comment-locked" id="comment-locked-0" onclick="showPayModal(0)">
+          🔒 Buy credits to leave a comment ($1 each)
+        </div>
+        <div id="comment-unlocked-0" style="display:none">
+          <textarea id="comment-text-0" placeholder="Write a comment…"></textarea>
+          <p class="comment-credit-note" id="comment-credit-note-0">💳 Balance: <span class="ccn-amt">…</span> · costs $1 to post</p>
+          <button class="comment-post-btn" onclick="postComment(0)">Post Comment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product 2 -->
+  <div class="product-card" id="card-1">
+    <div class="product-label">Product 2</div>
+    <div class="photo-area" id="photo-area-1">
+      <img id="photo-img-1" alt="Product 2">
+      <video id="photo-vid-1" controls style="display:none;width:100%;height:100%;object-fit:cover;border-radius:16px;"></video>
+      <div class="photo-placeholder" id="placeholder-1">
+        <span>📦</span>
+        <p>No photo yet</p>
+      </div>
+    </div>
+    <button class="load-btn admin-only" onclick="openFileBrowser(1)">🗂 Browse Files</button>
+    <button class="load-btn admin-only" onclick="triggerUpload(1)" style="margin-top:6px;font-size:0.75rem;color:#9aa0a6">📁 Other folder…</button>
+    <input type="file" id="file-input-1" accept="image/*,video/*,.heic,.heif,.bmp,.tiff,.tif" style="display:none" onchange="uploadPhoto(1, this)">
+    <div class="description-area">
+      <label>Description</label>
+      <textarea id="desc-1" placeholder="Enter product description…" readonly></textarea>
+    </div>
+    <div class="comment-section">
+      <div class="comment-heading">💬 Comments</div>
+      <div class="comment-list" id="comments-1"></div>
+      <div class="comment-input-wrap" id="comment-input-wrap-1">
+        <div class="comment-locked" id="comment-locked-1" onclick="showPayModal(1)">
+          🔒 Buy credits to leave a comment ($1 each)
+        </div>
+        <div id="comment-unlocked-1" style="display:none">
+          <textarea id="comment-text-1" placeholder="Write a comment…"></textarea>
+          <p class="comment-credit-note" id="comment-credit-note-1">💳 Balance: <span class="ccn-amt">…</span> · costs $1 to post</p>
+          <button class="comment-post-btn" onclick="postComment(1)">Post Comment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="save-row" style="display:none">
+  <div style="text-align:center">
+    <button id="save-btn" onclick="saveProducts()" title="Saves product photos and descriptions to the server">💾 Save Product Changes</button>
+    <p style="font-size:0.78rem;color:#9aa0a6;font-family:Roboto,Arial,sans-serif;margin:6px 0 0">Saves photos &amp; descriptions for all products</p>
+  </div>
+</div>
+
+<div id="toast">Saved!</div>
+
+<!-- File Browser Modal -->
+<div id="fb-overlay">
+  <div id="fb-modal">
+    <div id="fb-header">
+      <button id="fb-back" onclick="fbNavigate(fbParent)" disabled>← Back</button>
+      <h3>Browse Files</h3>
+      <div style="display:flex;gap:4px;margin-left:auto">
+        <button class="fb-view-btn active" id="fb-grid-btn" onclick="fbSetView('grid')" title="Grid view">⊞</button>
+        <button class="fb-view-btn" id="fb-list-btn" onclick="fbSetView('list')" title="List view">☰</button>
+      </div>
+    </div>
+    <div id="fb-quicklinks">
+      <button onclick="fbNavigate('~')">🏠 Home</button>
+      <button onclick="fbNavigate('~/Desktop')">🖥 Desktop</button>
+      <button onclick="fbNavigate('~/Downloads')">📥 Downloads</button>
+      <button onclick="fbNavigate('~/Documents')">📄 Documents</button>
+      <button onclick="fbNavigate('~/Pictures')">🖼 Pictures</button>
+    </div>
+    <div id="fb-filter">
+      <button class="fb-filter-btn active" onclick="fbSetFilter('all', this)">All</button>
+      <button class="fb-filter-btn" onclick="fbSetFilter('image', this)">🖼 Images</button>
+      <button class="fb-filter-btn" onclick="fbSetFilter('video', this)">🎬 Videos</button>
+      <button class="fb-filter-btn" onclick="fbSetFilter('jpg', this)">JPG</button>
+      <button class="fb-filter-btn" onclick="fbSetFilter('png', this)">PNG</button>
+      <button class="fb-filter-btn" onclick="fbSetFilter('heic', this)">HEIC</button>
+    </div>
+    <div id="fb-path"></div>
+    <div id="fb-grid"></div>
+    <div id="fb-footer">
+      <button id="fb-cancel-btn" onclick="closeFileBrowser()">Cancel</button>
+      <button id="fb-select-btn" disabled onclick="fbPickSelected()">Use This File</button>
+    </div>
+  </div>
+</div>
+
+<!-- Buy Credits Modal -->
+<div id="pay-modal-overlay">
+  <div id="pay-modal">
+    <h2>💰 Buy Comment Credits</h2>
+    <p class="modal-sub">Each comment costs $1 in credits. Credits work across all products.</p>
+    <p class="modal-balance">Current balance: <span id="modal-balance-display">$0.00</span></p>
+    <div class="credit-amounts">
+      <button class="credit-amt-btn selected" onclick="selectAmount(5, this)">
+        $5
+        <small>5 comments</small>
+      </button>
+      <button class="credit-amt-btn" onclick="selectAmount(10, this)">
+        $10
+        <small>10 comments</small>
+      </button>
+      <button class="credit-amt-btn" onclick="selectAmount(15, this)">
+        $15
+        <small>15 comments</small>
+      </button>
+      <button class="credit-amt-btn" onclick="selectAmount(20, this)">
+        $20
+        <small>20 comments</small>
+      </button>
+    </div>
+    <button id="pay-confirm-btn" onclick="startCreditPurchase()">Pay $5 with Stripe</button>
+    <button class="cancel-btn" onclick="hidePayModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:5001';
+  let productData = [{image: null, description: ''}, {image: null, description: ''}];
+  let userCreditBalance = 0;
+  let selectedCreditAmount = 5;
+
+  function fmtDollars(cents) {
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  function updateCreditDisplay(cents) {
+    userCreditBalance = cents;
+    document.getElementById('credit-display').textContent = fmtDollars(cents);
+    document.getElementById('modal-balance-display').textContent = fmtDollars(cents);
+    for (let i = 0; i < 2; i++) {
+      if (cents >= 100) {
+        document.getElementById(`comment-locked-${i}`).style.display = 'none';
+        document.getElementById(`comment-unlocked-${i}`).style.display = 'block';
+      } else {
+        document.getElementById(`comment-locked-${i}`).style.display = 'flex';
+        document.getElementById(`comment-unlocked-${i}`).style.display = 'none';
+      }
+      const note = document.getElementById(`comment-credit-note-${i}`);
+      if (note) note.querySelector('.ccn-amt').textContent = fmtDollars(cents);
+    }
+  }
+
+  async function loadCreditBalance() {
+    try {
+      const r = await fetch(`${API}/credits/balance`, { credentials: 'include' });
+      if (r.ok) {
+        const d = await r.json();
+        updateCreditDisplay(d.balance);
+      }
+    } catch(e) {}
+  }
+
+  async function init() {
+    try {
+      const r = await fetch(`${API}/products/data`, { credentials: 'include' });
+      if (r.ok) productData = await r.json();
+    } catch (e) {}
+
+    for (let i = 0; i < 2; i++) {
+      setPhoto(i, productData[i].image);
+      document.getElementById(`desc-${i}`).value = productData[i].description || '';
+    }
+
+    if (window._isAdmin) {
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
+      document.getElementById('save-row').style.display = 'flex';
+      document.querySelectorAll('textarea').forEach(t => t.removeAttribute('readonly'));
+    }
+  }
+
+  const VIDEO_EXTS = ['mp4','mov','avi','mkv','webm','m4v'];
+
+  function isVideo(url) {
+    if (!url) return false;
+    const ext = url.split('?')[0].split('.').pop().toLowerCase();
+    return VIDEO_EXTS.includes(ext);
+  }
+
+  function setPhoto(slot, url) {
+    const img         = document.getElementById(`photo-img-${slot}`);
+    const vid         = document.getElementById(`photo-vid-${slot}`);
+    const placeholder = document.getElementById(`placeholder-${slot}`);
+    img.style.display = 'none';
+    vid.style.display = 'none';
+    placeholder.style.display = 'none';
+    if (url) {
+      if (isVideo(url)) {
+        vid.src = url + '?t=' + Date.now();
+        vid.style.display = 'block';
+      } else {
+        img.src = url + '?t=' + Date.now();
+        img.style.display = 'block';
+      }
+    } else {
+      placeholder.style.display = 'flex';
+    }
+    productData[slot].image = url;
+  }
+
+  function triggerUpload(slot) {
+    document.getElementById(`file-input-${slot}`).click();
+  }
+
+  async function uploadPhoto(slot, input) {
+    const file = input.files[0];
+    if (!file) return;
+    const btn = document.querySelector(`#card-${slot} .load-btn`);
+    btn.textContent = '⏳ Uploading…';
+    btn.disabled = true;
+    const form = new FormData();
+    form.append('file', file);
+    form.append('slot', String(slot));
+    try {
+      const r    = await fetch(`${API}/products/upload`, {
+        method: 'POST', credentials: 'include', body: form
+      });
+      const data = await r.json();
+      if (r.ok) setPhoto(slot, data.url);
+      else alert('Upload failed: ' + (data.error || r.status));
+    } catch (e) {
+      alert('Cannot reach server.');
+    }
+    btn.textContent = '📁 Load Photo';
+    btn.disabled = false;
+    input.value = '';
+  }
+
+  async function saveProducts() {
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    for (let i = 0; i < 2; i++) {
+      productData[i].description = document.getElementById(`desc-${i}`).value;
+    }
+    try {
+      const r = await fetch(`${API}/products/save`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData),
+      });
+      if (r.ok) showToast('✓ Saved!');
+      else showToast('Save failed');
+    } catch (e) {
+      showToast('Cannot reach server');
+    }
+    btn.disabled = false;
+    btn.textContent = '💾 Save Changes';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ── Comments ──
+
+  async function loadComments(slot) {
+    try {
+      const r = await fetch(`${API}/comments?product=${slot}`, { credentials: 'include' });
+      if (!r.ok) return;
+      const comments = await r.json();
+      const list = document.getElementById(`comments-${slot}`);
+      if (!comments.length) {
+        list.innerHTML = '<p style="font-size:0.8rem;color:#9aa0a6;font-family:Roboto,Arial,sans-serif;margin:0 0 10px">No comments yet.</p>';
+        return;
+      }
+      list.innerHTML = comments.map(c => {
+        const date = new Date(c.created_at + 'Z').toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        return `<div class="comment-item">
+          <div class="comment-author">${escHtml(c.email)} · ${date}</div>
+          <div class="comment-body">${escHtml(c.body)}</div>
+        </div>`;
+      }).join('');
+    } catch(e) {}
+  }
+
+  async function postComment(slot) {
+    const textarea = document.getElementById(`comment-text-${slot}`);
+    const body = textarea.value.trim();
+    if (!body) return;
+    if (!confirm(`Post this comment? It will cost 1 credit ($1.00).\nCurrent balance: ${fmtDollars(userCreditBalance)}`)) return;
+    const btn = document.querySelector(`#comment-unlocked-${slot} .comment-post-btn`);
+    btn.disabled = true; btn.textContent = 'Posting…';
+    try {
+      const r = await fetch(`${API}/comments`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: slot, body }),
+      });
+      const d = await r.json();
+      if (r.ok) {
+        textarea.value = '';
+        updateCreditDisplay(d.balance);
+        await loadComments(slot);
+        showToast('Comment posted! ($1 credit used)');
+      } else if (r.status === 402) {
+        showPayModal();
+      } else {
+        alert(d.error || 'Failed to post comment');
+      }
+    } catch(e) { alert('Cannot reach server.'); }
+    btn.disabled = false; btn.textContent = 'Post Comment';
+  }
+
+  // ── Buy Credits Modal ──
+
+  function showPayModal() {
+    document.getElementById('modal-balance-display').textContent = fmtDollars(userCreditBalance);
+    selectAmount(5, document.querySelector('.credit-amt-btn'));
+    document.getElementById('pay-modal-overlay').classList.add('show');
+  }
+
+  function hidePayModal() {
+    document.getElementById('pay-modal-overlay').classList.remove('show');
+  }
+
+  function selectAmount(dollars, btn) {
+    selectedCreditAmount = dollars;
+    document.querySelectorAll('.credit-amt-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('pay-confirm-btn').textContent = `Pay $${dollars} with Stripe`;
+  }
+
+  async function startCreditPurchase() {
+    const btn = document.getElementById('pay-confirm-btn');
+    btn.textContent = 'Redirecting…';
+    btn.disabled = true;
+    try {
+      const r = await fetch(`${API}/credits/buy-session`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: selectedCreditAmount }),
+      });
+      const d = await r.json();
+      if (r.ok && d.url) {
+        window.location.href = d.url;
+      } else {
+        alert('Payment error: ' + (d.error || 'Unknown error'));
+        btn.textContent = `Pay $${selectedCreditAmount} with Stripe`;
+        btn.disabled = false;
+      }
+    } catch(e) {
+      alert('Cannot reach server.');
+      btn.textContent = `Pay $${selectedCreditAmount} with Stripe`;
+      btn.disabled = false;
+    }
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── File Browser ──
+  let fbSlot = 0;
+  let fbParent = null;
+  let fbSelectedPath = null;
+  let fbAllEntries = [];
+  let fbActiveFilter = 'all';
+  let fbViewMode = 'grid';
+
+  async function openFileBrowser(slot) {
+    fbSlot = slot;
+    fbSelectedPath = null;
+    document.getElementById('fb-select-btn').disabled = true;
+    document.getElementById('fb-overlay').classList.add('show');
+    await fbNavigate(null); // start at home
+  }
+
+  function closeFileBrowser() {
+    document.getElementById('fb-overlay').classList.remove('show');
+    fbSelectedPath = null;
+  }
+
+  async function fbNavigate(path, flat = false) {
+    const grid = document.getElementById('fb-grid');
+    grid.innerHTML = `<div id="fb-empty">${flat ? 'Scanning photos… (may take a moment)' : 'Loading…'}</div>`;
+    fbSelectedPath = null;
+    fbAllEntries = [];
+    fbActiveFilter = 'all';
+    document.querySelectorAll('.fb-filter-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+    document.getElementById('fb-select-btn').disabled = true;
+
+    const params = new URLSearchParams();
+    if (path) params.set('path', path);
+    if (flat) params.set('flat', 'true');
+    try {
+      const r = await fetch(`${API}/files/browse?${params}`, { credentials: 'include' });
+      const d = await r.json();
+      if (!r.ok) { grid.innerHTML = `<div id="fb-empty">${d.error || 'Error'}</div>`; return; }
+
+      fbParent = d.flat ? null : d.parent;
+      const pathLabel = d.flat
+        ? `📸 ${d.entries.length} most recent photos`
+        : d.path;
+      document.getElementById('fb-path').textContent = pathLabel;
+      document.getElementById('fb-back').disabled = !d.parent;
+
+      if (!d.entries.length) {
+        grid.innerHTML = '<div id="fb-empty">No images or folders here.</div>';
+        return;
+      }
+
+      fbAllEntries = d.entries;
+      fbRenderGrid();
+    } catch(e) {
+      grid.innerHTML = '<div id="fb-empty">Cannot reach server.</div>';
+    }
+  }
+
+  function fbFmtDate(mtime) {
+    if (!mtime) return '';
+    return new Date(mtime * 1000).toLocaleString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit'
+    });
+  }
+
+  function fbFilteredEntries() {
+    const f = fbActiveFilter;
+    return fbAllEntries.filter(e => {
+      if (f === 'all') return true;
+      if (f === 'image') return e.kind === 'image';
+      if (f === 'video') return e.kind === 'video';
+      return e.name.toLowerCase().endsWith('.' + f);
+    });
+  }
+
+  function fbRenderGrid() {
+    const grid = document.getElementById('fb-grid');
+    const visible = fbFilteredEntries();
+    if (!visible.length) {
+      grid.className = '';
+      grid.innerHTML = '<div id="fb-empty">No matching files.</div>';
+      return;
+    }
+    if (fbViewMode === 'list') {
+      grid.className = 'list-mode';
+      grid.innerHTML = visible.map(e => {
+        let thumbHtml;
+        if (e.kind === 'image' || e.kind === 'video') {
+          const src = `${API}/files/preview?path=${encodeURIComponent(e.path)}`;
+          const fallback = e.kind === 'video' ? '🎬' : '🖼';
+          thumbHtml = `<img class="fb-row-thumb" src="${src}" loading="lazy" onerror="this.outerHTML='<div class=\\'fb-row-icon\\'>${fallback}</div>'">`;
+        } else {
+          const icon = e.kind === 'dir' ? (e.name.endsWith('.photoslibrary') ? '📸' : '📁') : '🖼';
+          thumbHtml = `<div class="fb-row-icon">${icon}</div>`;
+        }
+        const kindLabel = e.kind === 'dir' ? 'folder' : e.name.split('.').pop().toUpperCase();
+        return `<div class="fb-row" data-path="${escHtml(e.path)}" data-kind="${e.kind}" onclick="fbSelect(this)">
+          ${thumbHtml}
+          <span class="fb-row-name">${escHtml(e.name)}</span>
+          <span class="fb-row-kind">${kindLabel}</span>
+          <span class="fb-row-date">${fbFmtDate(e.mtime)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      grid.className = '';
+      grid.innerHTML = visible.map(e => {
+        let thumb;
+        if (e.kind === 'image' || e.kind === 'video') {
+          const src = `${API}/files/preview?path=${encodeURIComponent(e.path)}`;
+          const fallback = e.kind === 'video' ? '🎬' : '🖼';
+          thumb = `<img class="fb-thumb" src="${src}" loading="lazy" onerror="this.outerHTML='<div class=\\'fb-icon\\'>${fallback}</div>'">`;
+        } else {
+          const icon = e.kind === 'dir' ? (e.name.endsWith('.photoslibrary') ? '📸' : '📁') : '🖼';
+          thumb = `<div class="fb-icon">${icon}</div>`;
+        }
+        return `<div class="fb-item" data-path="${escHtml(e.path)}" data-kind="${e.kind}" onclick="fbSelect(this)">
+          ${thumb}
+          <div class="fb-name">${escHtml(e.name)}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  function fbSetView(mode) {
+    fbViewMode = mode;
+    fbSelectedPath = null;
+    document.getElementById('fb-select-btn').disabled = true;
+    document.getElementById('fb-grid-btn').classList.toggle('active', mode === 'grid');
+    document.getElementById('fb-list-btn').classList.toggle('active', mode === 'list');
+    fbRenderGrid();
+  }
+
+  function fbSetFilter(filter, btn) {
+    fbActiveFilter = filter;
+    fbSelectedPath = null;
+    document.getElementById('fb-select-btn').disabled = true;
+    document.querySelectorAll('.fb-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    fbRenderGrid();
+  }
+
+  function fbSelect(el) {
+    const kind = el.dataset.kind;
+    const path = el.dataset.path;
+    if (kind === 'dir') {
+      if (path.endsWith('.photoslibrary')) {
+        fbNavigate(path + '/originals', true);
+      } else {
+        fbNavigate(path);
+      }
+      return;
+    }
+    document.querySelectorAll('.fb-item, .fb-row').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    fbSelectedPath = path;
+    document.getElementById('fb-select-btn').disabled = false;
+  }
+
+  async function fbPickSelected() {
+    if (!fbSelectedPath) return;
+    const btn = document.getElementById('fb-select-btn');
+    btn.disabled = true; btn.textContent = 'Copying…';
+    try {
+      const r = await fetch(`${API}/files/pick`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: fbSelectedPath, slot: fbSlot }),
+      });
+      const d = await r.json();
+      if (r.ok) {
+        setPhoto(fbSlot, d.url);
+        closeFileBrowser();
+        showToast('Photo loaded!');
+      } else {
+        alert('Error: ' + (d.error || 'Unknown'));
+      }
+    } catch(e) { alert('Cannot reach server.'); }
+    btn.disabled = false; btn.textContent = 'Use This File';
+  }
+
+  // ── Boot ──
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const creditsPaid  = params.get('credits_paid');
+    const amountParam  = params.get('amount');
+    const sessionParam = params.get('session_id');
+
+    try {
+      const r = await fetch(`${API}/auth/me`, { credentials: 'include' });
+      if (!r.ok) { window.location.href = 'http://localhost:5001/login.html'; return; }
+      const d = await r.json();
+      window._isAdmin = d.is_admin;
+    } catch (e) {
+      window.location.href = 'http://localhost:5001/login.html';
+      return;
+    }
+    document.documentElement.style.visibility = 'visible';
+
+    // Verify credit purchase on Stripe redirect-back
+    if (creditsPaid === '1' && sessionParam && amountParam) {
+      try {
+        await fetch(`${API}/credits/verify`, {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionParam, amount: parseInt(amountParam) }),
+        });
+      } catch(e) {}
+      window.history.replaceState({}, '', '/products.html');
+      showToast(`✓ $${amountParam} credits added!`);
+    }
+
+    await loadCreditBalance();
+    await init();
+    for (let i = 0; i < 2; i++) {
+      loadComments(i);
+    }
+  })();
+</script>
+</body>
+</html>

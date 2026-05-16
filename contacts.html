@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contacts</title>
+  <script>document.documentElement.style.visibility='hidden';(async()=>{try{const r=await fetch('http://localhost:5001/auth/me',{credentials:'include'});if(!r.ok){window.location.href='http://localhost:5001/login.html';return;}}catch(e){window.location.href='http://localhost:5001/login.html';return;}document.documentElement.style.visibility='visible';})();</script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -360,6 +362,36 @@
     }
 
     .cancel-btn:hover { box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 8px 14px;
+      border: 1px solid #dfe1e5;
+      border-radius: 16px;
+      background: #fff;
+      color: #1a73e8;
+      font-size: 0.85rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: box-shadow 0.15s;
+    }
+    .action-btn:hover { box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+    .action-btn[aria-disabled="true"] {
+      color: #aaa;
+      border-color: #eee;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -403,6 +435,13 @@
   </div>
 
   <script>
+    // ── Config (fill in your credentials) ──
+    // Twilio credentials live in server.py
+    const EMAILJS_PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';
+    const EMAILJS_SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';
+    const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
     // ── Background cycle ──
     const bgColors = ['#ff0000','#ff7700','#ffff00','#00cc00','#0000ff','#4b0082','#8b00ff'];
     let bgCurrent = 0;
@@ -655,7 +694,37 @@
       orgInput.type = 'text';
       orgInput.value = c.org;
 
-      // Buttons
+      // Action buttons
+      const actionRow = document.createElement('div');
+      actionRow.className = 'action-row';
+
+      const phone = c.phones && c.phones[0];
+      const email = c.emails && c.emails[0];
+
+      const textBtn = document.createElement('button');
+      textBtn.className = 'action-btn';
+      textBtn.textContent = '💬 Send Text';
+      if (phone) {
+        textBtn.addEventListener('click', () => sendText(textBtn, phone));
+      } else {
+        textBtn.setAttribute('aria-disabled', 'true');
+        textBtn.title = 'No phone number';
+      }
+
+      const emailBtn = document.createElement('button');
+      emailBtn.className = 'action-btn';
+      emailBtn.textContent = '✉️ Send Email';
+      if (email) {
+        emailBtn.addEventListener('click', () => sendEmail(emailBtn, email));
+      } else {
+        emailBtn.setAttribute('aria-disabled', 'true');
+        emailBtn.title = 'No email address';
+      }
+
+      actionRow.appendChild(textBtn);
+      actionRow.appendChild(emailBtn);
+
+      // Save / Cancel buttons
       const btnRow = document.createElement('div');
       btnRow.className = 'btn-row';
 
@@ -686,6 +755,7 @@
       panel.appendChild(emailArea);
       panel.appendChild(orgLabel);
       panel.appendChild(orgInput);
+      panel.appendChild(actionRow);
       panel.appendChild(btnRow);
 
       cardEl.appendChild(panel);
@@ -734,6 +804,60 @@
       selectedId = -1;
       doSearch();
       document.getElementById('search-input').focus();
+    }
+
+    // ── Send Text via Twilio ──
+    async function sendText(btn, phone) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Sending…';
+      try {
+        const res = await fetch('http://localhost:5001/send-sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: phone, body: 'test from EZ' })
+        });
+        if (res.ok) {
+          btn.textContent = '✓ Sent';
+          btn.style.color = '#34A853';
+        } else {
+          const err = await res.json();
+          btn.textContent = '✗ Failed';
+          btn.style.color = '#e74c3c';
+          console.error('Twilio error:', err);
+        }
+      } catch (e) {
+        btn.textContent = '✗ Error';
+        btn.style.color = '#e74c3c';
+        console.error(e);
+      }
+      setTimeout(() => {
+        btn.textContent = '💬 Send Text';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3000);
+    }
+
+    // ── Send Email via EmailJS ──
+    async function sendEmail(btn, toEmail) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Sending…';
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email: toEmail,
+          subject: 'test from EZ'
+        });
+        btn.textContent = '✓ Sent';
+        btn.style.color = '#34A853';
+      } catch (e) {
+        btn.textContent = '✗ Failed';
+        btn.style.color = '#e74c3c';
+        console.error('EmailJS error:', e);
+      }
+      setTimeout(() => {
+        btn.textContent = '✉️ Send Email';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3000);
     }
 
     // ── vCard serializer ──

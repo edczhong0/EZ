@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S&amp;P 500</title>
+  <script>document.documentElement.style.visibility='hidden';(async()=>{try{const r=await fetch('http://localhost:5001/auth/me',{credentials:'include'});if(!r.ok){window.location.href='http://localhost:5001/login.html';return;}}catch(e){window.location.href='http://localhost:5001/login.html';return;}document.documentElement.style.visibility='visible';})();</script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #add8e6;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      padding: 2rem 1rem 3rem;
+      box-sizing: border-box;
+    }
+
+    #home-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      font-family: 'Arial Black', Arial, sans-serif;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: conic-gradient(#e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6, #e74c3c);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #home-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+    h1 {
+      margin: 0 0 1.5rem;
+      font-size: 2.8rem;
+      font-weight: 900;
+      font-family: 'Arial Black', Arial, sans-serif;
+      letter-spacing: -1px;
+    }
+    h1 span:nth-child(1)  { color: #EA4335; }
+    h1 span:nth-child(2)  { color: #FBBC05; }
+    h1 span:nth-child(3)  { color: #34A853; }
+    h1 span:nth-child(4)  { color: #4285F4; }
+    h1 span:nth-child(5)  { color: #EA4335; }
+    h1 span:nth-child(6)  { color: #FBBC05; }
+    h1 span:nth-child(7)  { color: #34A853; }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-top: 4rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+      padding: 22px 28px;
+    }
+
+    #stats-card {
+      background: linear-gradient(135deg, #e0f3ff, #c8e8f5);
+    }
+
+    #stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: #5f6368;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #202124;
+    }
+
+    .stat-value.up   { color: #34A853; }
+    .stat-value.down { color: #EA4335; }
+
+    #chart-card { padding: 22px 18px 16px; }
+
+    #footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: #aaa;
+      flex-wrap: wrap;
+    }
+
+    #refresh-btn {
+      background: none;
+      border: 1px solid #b0cfe0;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      color: #4285F4;
+      cursor: pointer;
+      font-family: Roboto, Arial, sans-serif;
+      transition: background 0.15s;
+    }
+    #refresh-btn:hover { background: rgba(66,133,244,0.08); }
+
+    #source-link a { color: #4285F4; text-decoration: none; }
+
+    #status-msg {
+      text-align: center;
+      color: #5f6368;
+      padding: 20px 0;
+      font-size: 0.95rem;
+    }
+
+    #table-card {
+      padding: 0;
+      overflow: hidden;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    #data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 0.88rem;
+    }
+
+    #data-table thead {
+      position: sticky;
+      top: 0;
+      background: #f8f9fa;
+      z-index: 1;
+    }
+
+    #data-table th {
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #5f6368;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #e8eaed;
+    }
+
+    #data-table th:not(:first-child) { text-align: right; }
+
+    #data-table td {
+      padding: 9px 16px;
+      border-bottom: 1px solid #f1f3f4;
+      color: #202124;
+    }
+
+    #data-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+
+    #data-table tbody tr:last-child td { border-bottom: none; }
+    #data-table tbody tr:hover { background: #f8f9fa; }
+
+    .up   { color: #34A853; }
+    .down { color: #EA4335; }
+
+    /* ── Forecast card ── */
+    #forecast-card {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border-radius: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+      padding: 22px 28px;
+    }
+
+    #forecast-card h2 {
+      margin: 0 0 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #5f6368;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    #verdict {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    #forecast-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .fstat {
+      background: rgba(255,255,255,0.65);
+      border-radius: 14px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+
+    .fstat .stat-label { font-size: 0.72rem; color: #5f6368; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
+    .fstat .stat-value { font-size: 1.15rem; font-weight: 700; color: #202124; }
+
+    #forecast-chart-wrap { background: rgba(255,255,255,0.55); border-radius: 14px; padding: 12px 8px 4px; }
+
+    #forecast-note {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: #8a7a50;
+      font-family: Roboto, Arial, sans-serif;
+    }
+
+    /* ── ARIMA param controls ── */
+    #arima-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.55);
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+
+    .arima-param {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .arima-param label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #5f6368;
+    }
+
+    .arima-param input[type=number] {
+      width: 48px;
+      padding: 4px 6px;
+      border: 1px solid #d0c080;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #202124;
+      background: #fff;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    .arima-param input[type=number]::-webkit-inner-spin-button,
+    .arima-param input[type=number]::-webkit-outer-spin-button { opacity: 1; }
+
+    #run-forecast-btn {
+      margin-left: auto;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #FF6D00, #ff8f00);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    #run-forecast-btn:hover  { opacity: 0.88; }
+    #run-forecast-btn:active { transform: scale(0.97); }
+    #run-forecast-btn:disabled { opacity: 0.5; cursor: default; }
+  </style>
+</head>
+<body>
+  <a id="home-btn" href="index.html">Home</a>
+
+  <div class="container">
+    <h1>
+      <span>S</span><span>&</span><span>P</span><span>&nbsp;</span><span>5</span><span>0</span><span>0</span>
+    </h1>
+
+    <div class="card" id="stats-card">
+      <div id="stats-content"><div id="status-msg">Loading data…</div></div>
+    </div>
+
+    <div class="card" id="chart-card">
+      <canvas id="sp-chart"></canvas>
+    </div>
+
+    <div class="card" id="table-card">
+      <table id="data-table">
+        <thead>
+          <tr><th>Date</th><th>Close</th><th>Change</th><th>Change %</th></tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <div id="forecast-card">
+      <h2>🔮 ARIMA Forecast</h2>
+
+      <div id="arima-controls">
+        <div class="arima-param">
+          <label title="AR order — how many past days to look back">p</label>
+          <input type="number" id="param-p" value="5" min="0" max="10">
+        </div>
+        <div class="arima-param">
+          <label title="Differencing — removes trend (1 = day-over-day changes)">d</label>
+          <input type="number" id="param-d" value="1" min="0" max="2">
+        </div>
+        <div class="arima-param">
+          <label title="MA order — past forecast errors to factor in">q</label>
+          <input type="number" id="param-q" value="0" min="0" max="5">
+        </div>
+        <div class="arima-param">
+          <label title="Trading days ahead to forecast">Days</label>
+          <input type="number" id="param-steps" value="30" min="5" max="90">
+        </div>
+        <button id="run-forecast-btn" onclick="runForecast()">▶ Run Forecast</button>
+      </div>
+
+      <div id="forecast-content"><div style="text-align:center;color:#5f6368;padding:20px 0">Loading forecast…</div></div>
+    </div>
+
+    <div id="footer">
+      <span id="updated-label">—</span>
+      <button id="refresh-btn" onclick="forceRefresh()">↻ Refresh</button>
+      <span id="source-link">Data: <a href="https://fred.stlouisfed.org/series/SP500" target="_blank" rel="noopener">FRED / St. Louis Fed</a></span>
+    </div>
+  </div>
+
+  <script>
+    // FRED API key lives in server.py
+    const CACHE_KEY    = 'sp500_cache';
+    const TTL          = 2 * 60 * 60 * 1000; // 2 hours
+
+    let chartInstance = null;
+
+    function fiveYearsAgo() {
+      const d = new Date();
+      d.setFullYear(d.getFullYear() - 5);
+      return d.toISOString().slice(0, 10);
+    }
+
+    async function initSP500() {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const obj = JSON.parse(cached);
+        if (Date.now() - obj.ts < TTL) {
+          render(obj.observations);
+          setTimeout(fetchSP500, TTL - (Date.now() - obj.ts));
+          return;
+        }
+      }
+      await fetchSP500();
+    }
+
+    async function fetchSP500() {
+      document.getElementById('status-msg') &&
+        (document.getElementById('status-msg').textContent = 'Loading data…');
+      try {
+        const url = `http://localhost:5001/sp500?start=${fiveYearsAgo()}`;
+        const res  = await fetch(url);
+        const json = await res.json();
+        const obs  = (json.observations || []).filter(o => o.value !== '.');
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), observations: obs }));
+        render(obs);
+        setTimeout(fetchSP500, TTL);
+      } catch (e) {
+        document.getElementById('stats-content').innerHTML =
+          `<div id="status-msg">Failed to load data. Check your API key or network.</div>`;
+        console.error(e);
+      }
+    }
+
+    function forceRefresh() {
+      localStorage.removeItem(CACHE_KEY);
+      document.getElementById('stats-content').innerHTML = '<div id="status-msg">Loading data…</div>';
+      fetchSP500();
+    }
+
+    function fmt(n) {
+      return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function render(obs) {
+      if (!obs.length) {
+        document.getElementById('stats-content').innerHTML =
+          '<div id="status-msg">No data returned.</div>';
+        return;
+      }
+
+      const latest   = parseFloat(obs[obs.length - 1].value);
+      const prev     = parseFloat(obs[obs.length - 2]?.value || obs[obs.length - 1].value);
+      const change   = latest - prev;
+      const changePct = (change / prev * 100);
+      const values   = obs.map(o => parseFloat(o.value));
+      const high     = Math.max(...values);
+      const low      = Math.min(...values);
+      const upClass  = change >= 0 ? 'up' : 'down';
+      const sign     = change >= 0 ? '+' : '';
+
+      document.getElementById('stats-content').innerHTML = `
+        <div id="stats-grid">
+          <div>
+            <div class="stat-label">Latest</div>
+            <div class="stat-value">${fmt(latest)}</div>
+          </div>
+          <div>
+            <div class="stat-label">Week Change</div>
+            <div class="stat-value ${upClass}">${sign}${fmt(change)} (${sign}${changePct.toFixed(2)}%)</div>
+          </div>
+          <div>
+            <div class="stat-label">5-Yr High</div>
+            <div class="stat-value">${fmt(high)}</div>
+          </div>
+          <div>
+            <div class="stat-label">5-Yr Low</div>
+            <div class="stat-value">${fmt(low)}</div>
+          </div>
+        </div>`;
+
+      // Updated label
+      const t = new Date();
+      document.getElementById('updated-label').textContent =
+        `Updated ${t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · auto-refreshes every 2 hrs`;
+
+      // Daily table (newest first)
+      const tbody = document.getElementById('table-body');
+      let rows = '';
+      for (let i = obs.length - 1; i >= 0; i--) {
+        const val  = parseFloat(obs[i].value);
+        const prev = i > 0 ? parseFloat(obs[i - 1].value) : null;
+        const chg  = prev !== null ? val - prev : null;
+        const pct  = prev !== null ? (chg / prev * 100) : null;
+        const cls  = chg === null ? '' : chg >= 0 ? 'up' : 'down';
+        const sign = chg !== null && chg >= 0 ? '+' : '';
+        const d    = new Date(obs[i].date + 'T00:00:00');
+        const dateLabel = d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+        rows += `<tr>
+          <td>${dateLabel}</td>
+          <td>${fmt(val)}</td>
+          <td class="${cls}">${chg !== null ? sign + fmt(chg) : '—'}</td>
+          <td class="${cls}">${pct !== null ? sign + pct.toFixed(2) + '%' : '—'}</td>
+        </tr>`;
+      }
+      tbody.innerHTML = rows;
+
+      // Chart
+      const labels  = obs.map(o => {
+        const d = new Date(o.date + 'T00:00:00');
+        return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      });
+      const data    = obs.map(o => parseFloat(o.value));
+
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(document.getElementById('sp-chart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'S&P 500',
+            data,
+            borderColor: '#4285F4',
+            backgroundColor: 'rgba(66,133,244,0.08)',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.3,
+          }]
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ' ' + fmt(ctx.parsed.y)
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                maxTicksLimit: 12,
+                font: { size: 11 },
+                color: '#5f6368',
+              },
+              grid: { display: false }
+            },
+            y: {
+              ticks: {
+                callback: v => v.toLocaleString(),
+                font: { size: 11 },
+                color: '#5f6368',
+              },
+              grid: { color: 'rgba(0,0,0,0.05)' }
+            }
+          }
+        }
+      });
+    }
+
+    initSP500();
+
+    // ── ARIMA Forecast ──
+    const FORECAST_TTL = 4 * 60 * 60 * 1000; // 4 hours
+    let forecastChart = null;
+
+    function getParams() {
+      return {
+        p:     Math.max(0, Math.min(10, parseInt(document.getElementById('param-p').value)     || 5)),
+        d:     Math.max(0, Math.min(2,  parseInt(document.getElementById('param-d').value)     || 1)),
+        q:     Math.max(0, Math.min(5,  parseInt(document.getElementById('param-q').value)     || 0)),
+        steps: Math.max(5, Math.min(90, parseInt(document.getElementById('param-steps').value) || 30)),
+      };
+    }
+
+    function forecastCacheKey(params) {
+      return `sp500_forecast_${params.p}_${params.d}_${params.q}_${params.steps}`;
+    }
+
+    async function initForecast() {
+      const params = getParams();
+      const cacheKey = forecastCacheKey(params);
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const obj = JSON.parse(cached);
+        if (Date.now() - obj.ts < FORECAST_TTL) {
+          renderForecast(obj.data);
+          return;
+        }
+      }
+      await fetchForecast(params);
+    }
+
+    async function fetchForecast(params) {
+      if (!params) params = getParams();
+      const btn = document.getElementById('run-forecast-btn');
+      if (btn) btn.disabled = true;
+      try {
+        const url  = `http://localhost:5001/sp500/forecast?p=${params.p}&d=${params.d}&q=${params.q}&steps=${params.steps}`;
+        const res  = await fetch(url);
+        const data = await res.json();
+        localStorage.setItem(forecastCacheKey(params), JSON.stringify({ ts: Date.now(), data }));
+        renderForecast(data);
+      } catch (e) {
+        document.getElementById('forecast-content').innerHTML =
+          '<div style="color:#EA4335;padding:16px 0">Failed to load forecast. Is the server running?</div>';
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function runForecast() {
+      const params = getParams();
+      localStorage.removeItem(forecastCacheKey(params));
+      document.getElementById('forecast-content').innerHTML =
+        '<div style="text-align:center;color:#5f6368;padding:20px 0">Running forecast…</div>';
+      fetchForecast(params);
+    }
+
+    function renderForecast(data) {
+      const p       = data.params ? data.params.p     : 5;
+      const d       = data.params ? data.params.d     : 1;
+      const q       = data.params ? data.params.q     : 0;
+      const steps   = data.params ? data.params.steps : 30;
+      const current   = data.last_actual.value;
+      const predicted = data.forecast[data.forecast.length - 1].value;
+      const change    = predicted - current;
+      const changePct = (change / current * 100);
+      const bullish   = change >= 0;
+      const sign      = change >= 0 ? '+' : '';
+      const cls       = bullish ? 'up' : 'down';
+
+      document.getElementById('forecast-content').innerHTML = `
+        <div id="verdict" class="${cls}">
+          ${bullish ? '📈 Bullish Trend' : '📉 Bearish Trend'}
+        </div>
+        <div id="forecast-stats">
+          <div class="fstat">
+            <div class="stat-label">Current</div>
+            <div class="stat-value">${fmt(current)}</div>
+          </div>
+          <div class="fstat">
+            <div class="stat-label">Predicted (${data.params ? data.params.steps : 30} days)</div>
+            <div class="stat-value">${fmt(predicted)}</div>
+          </div>
+          <div class="fstat">
+            <div class="stat-label">Expected Change</div>
+            <div class="stat-value ${cls}">${sign}${fmt(change)} (${sign}${changePct.toFixed(1)}%)</div>
+          </div>
+        </div>
+        <div id="forecast-chart-wrap"><canvas id="forecast-chart"></canvas></div>
+        <div id="forecast-note">⚠️ ARIMA(${p},${d},${q}) · ${steps}-day forecast · Statistical model based on historical patterns. Not financial advice. Confidence band widens with time.</div>`;
+
+      // Build chart data
+      const actualLabels = data.recent.map(p => p.date);
+      const actualValues = data.recent.map(p => p.value);
+
+      // Forecast arrays aligned after actual
+      const fcLabels = data.forecast.map(p => p.date);
+      const fcValues = data.forecast.map(p => p.value);
+      const fcLower  = data.forecast.map(p => p.lower);
+      const fcUpper  = data.forecast.map(p => p.upper);
+
+      // Combined labels for x-axis
+      const allLabels = [...actualLabels, ...fcLabels];
+
+      // Pad actual series with null for forecast region
+      const actualPadded = [...actualValues, ...Array(fcLabels.length).fill(null)];
+      // Pad forecast series with null for actual region (overlap by 1 for continuity)
+      const fcPadded     = [...Array(actualValues.length - 1).fill(null), actualValues[actualValues.length - 1], ...fcValues];
+      const lowerPadded  = [...Array(actualValues.length - 1).fill(null), actualValues[actualValues.length - 1], ...fcLower];
+      const upperPadded  = [...Array(actualValues.length - 1).fill(null), actualValues[actualValues.length - 1], ...fcUpper];
+
+      if (forecastChart) forecastChart.destroy();
+      forecastChart = new Chart(document.getElementById('forecast-chart'), {
+        type: 'line',
+        data: {
+          labels: allLabels,
+          datasets: [
+            {
+              label: 'Actual',
+              data: actualPadded,
+              borderColor: '#4285F4',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.3,
+            },
+            {
+              label: 'Forecast',
+              data: fcPadded,
+              borderColor: '#FF6D00',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              borderDash: [6, 3],
+              pointRadius: 0,
+              tension: 0.3,
+            },
+            {
+              label: 'Upper bound',
+              data: upperPadded,
+              borderColor: 'transparent',
+              backgroundColor: 'rgba(255,109,0,0.12)',
+              borderWidth: 0,
+              pointRadius: 0,
+              fill: '+1',
+              tension: 0.3,
+            },
+            {
+              label: 'Lower bound',
+              data: lowerPadded,
+              borderColor: 'transparent',
+              backgroundColor: 'rgba(255,109,0,0.12)',
+              borderWidth: 0,
+              pointRadius: 0,
+              fill: false,
+              tension: 0.3,
+            },
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              display: true,
+              labels: {
+                filter: item => item.text === 'Actual' || item.text === 'Forecast',
+                font: { size: 11 },
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  if (ctx.parsed.y === null) return null;
+                  return ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`;
+                }
+              }
+            },
+            annotation: {}
+          },
+          scales: {
+            x: {
+              ticks: { maxTicksLimit: 10, font: { size: 10 }, color: '#5f6368' },
+              grid: { display: false }
+            },
+            y: {
+              ticks: { callback: v => v.toLocaleString(), font: { size: 11 }, color: '#5f6368' },
+              grid: { color: 'rgba(0,0,0,0.05)' }
+            }
+          }
+        }
+      });
+    }
+
+    initForecast();
+  </script>
+</body>
+</html>

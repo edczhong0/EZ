@@ -1,0 +1,10 @@
+{
+  "python.defaultInterpreterPath": "/usr/bin/python3",
+  "python.envFile": "${workspaceFolder}/.env",
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "*.db": true
+  }
+}

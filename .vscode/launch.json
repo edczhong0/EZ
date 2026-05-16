@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Flask Server",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/server.py",
+      "python": "/usr/bin/python3",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "jinja": true
+    }
+  ]
+}

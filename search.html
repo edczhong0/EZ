@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact SQL Search</title>
+  <script>document.documentElement.style.visibility='hidden';(async()=>{try{const r=await fetch('http://localhost:5001/auth/me',{credentials:'include'});if(!r.ok){window.location.href='http://localhost:5001/login.html';return;}}catch(e){window.location.href='http://localhost:5001/login.html';return;}document.documentElement.style.visibility='visible';})();</script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #add8e6;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      padding: 5rem 1rem 2rem;
+      box-sizing: border-box;
+    }
+
+    #home-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: conic-gradient(#e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6, #e74c3c);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #home-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+    #contacts-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: conic-gradient(#e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6, #e74c3c);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #contacts-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+    #main {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+      padding: 24px 28px;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #202124;
+      margin: 0 0 18px;
+      letter-spacing: -0.3px;
+    }
+
+    /* server banner */
+    #server-banner {
+      display: none;
+      background: #fce8e6;
+      border-radius: 12px;
+      padding: 10px 16px;
+      color: #c5221f;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
+
+    /* SQL textarea */
+    #sql-input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #dfe1e5;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      font-family: 'Roboto Mono', 'Courier New', monospace;
+      color: #3c4043;
+      outline: none;
+      resize: vertical;
+      min-height: 90px;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    #sql-input:focus {
+      box-shadow: 0 1px 6px rgba(32,33,36,0.22);
+      border-color: #4285F4;
+    }
+
+    .quick-label {
+      font-size: 0.8rem;
+      color: #70757a;
+      margin: 14px 0 8px;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      background: #f1f3f4;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      color: #3c4043;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .pill:hover { background: #e0e0e0; }
+
+    .run-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #run-btn {
+      flex: 1;
+      background: #4285F4;
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      padding: 11px 20px;
+      font-size: 1rem;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #run-btn:hover { background: #3367d6; }
+    #run-btn:active { background: #2a56c6; }
+
+    .hint-text {
+      font-size: 0.78rem;
+      color: #70757a;
+      margin-top: 10px;
+    }
+
+    /* Schema card */
+    .schema-toggle {
+      background: none;
+      border: none;
+      color: #4285F4;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      padding: 0;
+      float: right;
+    }
+    .schema-toggle:hover { text-decoration: underline; }
+
+    #schema-body {
+      display: none;
+      margin-top: 14px;
+    }
+
+    #schema-body pre {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.82rem;
+      font-family: 'Roboto Mono', 'Courier New', monospace;
+      color: #202124;
+      margin: 0;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+
+    /* Results card */
+    #results-card { display: none; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .results-meta {
+      font-size: 0.88rem;
+      color: #70757a;
+    }
+
+    .results-meta strong { color: #202124; }
+
+    /* inline filter */
+    #filter-input {
+      border: 1px solid #dfe1e5;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-family: Roboto, Arial, sans-serif;
+      color: #3c4043;
+      outline: none;
+      width: 180px;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    #filter-input:focus {
+      box-shadow: 0 1px 4px rgba(32,33,36,0.2);
+      border-color: #4285F4;
+    }
+
+    /* error */
+    #error-card {
+      display: none;
+      background: #fce8e6;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #c5221f;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+      margin-bottom: 12px;
+    }
+    #error-card strong { display: block; margin-bottom: 4px; }
+
+    /* table */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #e8eaed;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      font-family: Roboto, Arial, sans-serif;
+    }
+
+    thead { background: #f1f3f4; }
+
+    th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 500;
+      color: #3c4043;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    th:hover { background: #e8eaed; }
+    th .sort-icon { margin-left: 4px; font-size: 0.72rem; color: #70757a; }
+
+    td {
+      padding: 9px 14px;
+      color: #202124;
+      border-top: 1px solid #e8eaed;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    tr:hover td { background: #f8f9fa; }
+
+    /* pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: #70757a;
+    }
+
+    .page-btn {
+      background: #f1f3f4;
+      border: none;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.82rem;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      color: #3c4043;
+      transition: background 0.15s;
+    }
+    .page-btn:hover:not(:disabled) { background: #e0e0e0; }
+    .page-btn:disabled { opacity: 0.4; cursor: default; }
+  </style>
+</head>
+<body>
+
+<a id="home-btn" href="index.html">Home</a>
+<a id="contacts-btn" href="contacts.html">Contacts</a>
+
+<div id="main">
+
+  <!-- Query Card -->
+  <div class="card">
+    <div class="card-title">SQL Query</div>
+    <div id="server-banner">Server not reachable. Start <code>server.py</code> first.</div>
+    <textarea id="sql-input" rows="4" spellcheck="false">SELECT * FROM contacts LIMIT 20</textarea>
+
+    <div class="quick-label">Quick queries</div>
+    <div class="pills">
+      <button class="pill" onclick="setQuery('all')">All Contacts</button>
+      <button class="pill" onclick="setQuery('phones')">With Phone</button>
+      <button class="pill" onclick="setQuery('emails')">With Email</button>
+      <button class="pill" onclick="setQuery('multiphone')">Multi-Phone</button>
+      <button class="pill" onclick="setQuery('org')">By Org</button>
+      <button class="pill" onclick="setQuery('full')">Full Join</button>
+    </div>
+
+    <div class="run-row">
+      <button id="run-btn" onclick="runQuery()">Run Query ▶</button>
+    </div>
+    <div class="hint-text">Read-only &mdash; only SELECT queries are allowed &nbsp;&bull;&nbsp; Cmd/Ctrl+Enter to run</div>
+  </div>
+
+  <!-- Schema Card -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom:0">
+      Schema Reference
+      <button class="schema-toggle" id="schema-toggle" onclick="toggleSchema()">Show</button>
+    </div>
+    <div id="schema-body">
+      <pre>contacts  ( id INTEGER PK, fn TEXT, org TEXT )
+
+phones    ( id INTEGER PK,
+            contact_id → contacts.id,
+            number TEXT,
+            type   TEXT  DEFAULT 'VOICE' )
+
+emails    ( id INTEGER PK,
+            contact_id → contacts.id,
+            address TEXT )
+
+-- Example joins
+SELECT c.fn, p.number
+FROM contacts c JOIN phones p ON p.contact_id = c.id
+
+SELECT c.fn, e.address
+FROM contacts c JOIN emails e ON e.contact_id = c.id</pre>
+    </div>
+  </div>
+
+  <!-- Results Card -->
+  <div class="card" id="results-card">
+    <div id="error-card"><strong>SQL Error</strong><span id="error-msg"></span></div>
+    <div class="results-header">
+      <div class="results-meta" id="results-meta"></div>
+      <input id="filter-input" type="text" placeholder="Filter results..." oninput="filterResults()" />
+    </div>
+    <div class="table-wrap">
+      <table id="results-table">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <button class="page-btn" id="prev-btn" onclick="goToPage(currentPage - 1)">← Prev</button>
+      <span id="page-info"></span>
+      <button class="page-btn" id="next-btn" onclick="goToPage(currentPage + 1)">Next →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PAGE_SIZE = 20;
+let lastResults = { columns: [], rows: [] };
+let filteredRows = [];
+let sortCol = -1;
+let sortAsc = true;
+let currentPage = 1;
+
+const QUICK_QUERIES = {
+  all:        'SELECT id, fn, org\nFROM contacts\nORDER BY fn COLLATE NOCASE',
+  phones:     'SELECT c.fn, p.number, p.type\nFROM contacts c\nJOIN phones p ON p.contact_id = c.id\nORDER BY c.fn COLLATE NOCASE',
+  emails:     'SELECT c.fn, e.address\nFROM contacts c\nJOIN emails e ON e.contact_id = c.id\nORDER BY c.fn COLLATE NOCASE',
+  multiphone: 'SELECT c.fn, COUNT(p.id) AS phone_count\nFROM contacts c\nJOIN phones p ON p.contact_id = c.id\nGROUP BY c.id\nHAVING phone_count > 1\nORDER BY phone_count DESC',
+  org:        'SELECT c.fn, c.org, p.number\nFROM contacts c\nLEFT JOIN phones p ON p.contact_id = c.id\nWHERE c.org != \'\'\nORDER BY c.org COLLATE NOCASE',
+  full:       'SELECT c.id, c.fn, c.org,\n       GROUP_CONCAT(DISTINCT p.number, \' | \') AS phones,\n       GROUP_CONCAT(DISTINCT e.address, \' | \') AS emails\nFROM contacts c\nLEFT JOIN phones p ON p.contact_id = c.id\nLEFT JOIN emails e ON e.contact_id = c.id\nGROUP BY c.id\nORDER BY c.fn COLLATE NOCASE',
+};
+
+function setQuery(key) {
+  document.getElementById('sql-input').value = QUICK_QUERIES[key];
+}
+
+function toggleSchema() {
+  const body = document.getElementById('schema-body');
+  const btn  = document.getElementById('schema-toggle');
+  const shown = body.style.display === 'block';
+  body.style.display = shown ? 'none' : 'block';
+  btn.textContent = shown ? 'Show' : 'Hide';
+}
+
+async function runQuery() {
+  const sql = document.getElementById('sql-input').value.trim();
+  if (!sql) return;
+
+  const btn = document.getElementById('run-btn');
+  btn.textContent = 'Running…';
+  btn.disabled = true;
+
+  const t0 = performance.now();
+  try {
+    const res  = await fetch('http://localhost:5001/db/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql }),
+    });
+    const data = await res.json();
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(3);
+
+    document.getElementById('results-card').style.display = 'block';
+    document.getElementById('error-card').style.display   = 'none';
+
+    if (!res.ok) {
+      showError(data.error);
+    } else {
+      lastResults = data;
+      filteredRows = data.rows.slice();
+      sortCol = -1;
+      sortAsc = true;
+      currentPage = 1;
+      document.getElementById('filter-input').value = '';
+      renderResults(elapsed);
+    }
+  } catch (e) {
+    document.getElementById('results-card').style.display = 'block';
+    showError('Network error: ' + e.message);
+  } finally {
+    btn.textContent = 'Run Query ▶';
+    btn.disabled = false;
+  }
+}
+
+function showError(msg) {
+  const card = document.getElementById('error-card');
+  card.style.display = 'block';
+  document.getElementById('error-msg').textContent = msg;
+  document.getElementById('table-head').innerHTML = '';
+  document.getElementById('table-body').innerHTML = '';
+  document.getElementById('results-meta').textContent = '';
+  document.getElementById('page-info').textContent = '';
+  document.getElementById('prev-btn').disabled = true;
+  document.getElementById('next-btn').disabled = true;
+}
+
+function filterResults() {
+  const q = document.getElementById('filter-input').value.toLowerCase();
+  filteredRows = q
+    ? lastResults.rows.filter(row => row.some(cell => String(cell ?? '').toLowerCase().includes(q)))
+    : lastResults.rows.slice();
+  currentPage = 1;
+  renderTable();
+}
+
+function sortBy(colIdx) {
+  if (sortCol === colIdx) {
+    sortAsc = !sortAsc;
+  } else {
+    sortCol = colIdx;
+    sortAsc = true;
+  }
+  filteredRows.sort((a, b) => {
+    const va = a[colIdx] ?? '';
+    const vb = b[colIdx] ?? '';
+    const cmp = String(va).localeCompare(String(vb), undefined, { numeric: true, sensitivity: 'base' });
+    return sortAsc ? cmp : -cmp;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function goToPage(p) {
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  currentPage = Math.max(1, Math.min(p, totalPages));
+  renderTable();
+}
+
+function renderResults(elapsed) {
+  const { columns, rows } = lastResults;
+  const total = rows.length;
+
+  document.getElementById('results-meta').innerHTML =
+    `<strong>${total}</strong> row${total !== 1 ? 's' : ''} &nbsp;&bull;&nbsp; ${elapsed}s`;
+
+  // build header
+  const head = document.getElementById('table-head');
+  head.innerHTML = '<tr>' + columns.map((col, i) => {
+    const icon = sortCol === i ? (sortAsc ? ' ▲' : ' ▼') : ' ⇅';
+    return `<th onclick="sortBy(${i})">${escHtml(col)}<span class="sort-icon">${icon}</span></th>`;
+  }).join('') + '</tr>';
+
+  renderTable();
+}
+
+function renderTable() {
+  const { columns } = lastResults;
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageRows = filteredRows.slice(start, start + PAGE_SIZE);
+
+  // update header sort icons
+  const ths = document.querySelectorAll('#table-head th');
+  ths.forEach((th, i) => {
+    const icon = th.querySelector('.sort-icon');
+    if (icon) icon.textContent = sortCol === i ? (sortAsc ? ' ▲' : ' ▼') : ' ⇅';
+  });
+
+  const body = document.getElementById('table-body');
+  body.innerHTML = pageRows.map(row =>
+    '<tr>' + row.map(cell => `<td title="${escHtml(String(cell ?? ''))}">${escHtml(String(cell ?? ''))}</td>`).join('') + '</tr>'
+  ).join('');
+
+  const filtered = filteredRows.length;
+  const total    = lastResults.rows.length;
+  const metaEl   = document.getElementById('results-meta');
+  metaEl.innerHTML = filtered < total
+    ? `<strong>${filtered}</strong> of <strong>${total}</strong> rows (filtered)`
+    : `<strong>${total}</strong> row${total !== 1 ? 's' : ''}`;
+
+  document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+  document.getElementById('prev-btn').disabled = currentPage <= 1;
+  document.getElementById('next-btn').disabled = currentPage >= totalPages;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Cmd/Ctrl + Enter to run
+document.getElementById('sql-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    runQuery();
+  }
+});
+
+// check server on load
+(async () => {
+  try {
+    const res = await fetch('http://localhost:5001/db/contacts');
+    if (!res.ok) throw new Error();
+  } catch {
+    document.getElementById('server-banner').style.display = 'block';
+  }
+})();
+</script>
+
+</body>
+</html>

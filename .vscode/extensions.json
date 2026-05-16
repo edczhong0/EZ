@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.debugpy",
+    "ms-python.pylint",
+    "formulahendry.auto-rename-tag",
+    "ecmel.vscode-html-css"
+  ]
+}

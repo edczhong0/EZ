@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hello World</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>document.documentElement.style.visibility='hidden';(async()=>{try{const r=await fetch('http://localhost:5001/auth/me',{credentials:'include'});if(!r.ok){window.location.href='http://localhost:5001/login.html';return;}}catch(e){window.location.href='http://localhost:5001/login.html';return;}document.documentElement.style.visibility='visible';})();</script>
   <style>
     body {
       margin: 0;
@@ -41,6 +43,121 @@
       100% { transform: translateY(0) rotate(0deg); }
     }
 
+    #sql-btn {
+      position: fixed;
+      top: 12.5rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.6rem;
+      font-weight: bold;
+      font-family: 'Arial Black', Arial, sans-serif;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #EA4335, #9b59b6);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #sql-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+    #news-btn {
+      position: fixed;
+      top: 18rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      font-family: 'Arial Black', Arial, sans-serif;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #news-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+    #cal-btn {
+      position: fixed;
+      top: 23.5rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      font-family: 'Arial Black', Arial, sans-serif;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #cal-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+    #products-btn {
+      position: fixed;
+      top: 29rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      font-family: 'Arial Black', Arial, sans-serif;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b6b, #ffa500);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #products-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+    #sp500-btn {
+      position: fixed;
+      top: 7rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      font-size: 0.6rem;
+      font-weight: bold;
+      font-family: 'Arial Black', Arial, sans-serif;
+      text-decoration: none;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #34A853, #4285F4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-align: center;
+    }
+    #sp500-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
     #contacts-btn {
       position: fixed;
       top: 1.5rem;
@@ -68,6 +185,25 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
+    #logout-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 7rem;
+      height: 4rem;
+      padding: 0 16px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.1s;
+      color: #e74c3c;
+    }
+    #logout-btn:hover { background: rgba(255,200,200,0.7); }
+
     #bg-btn {
       position: fixed;
       top: 1.5rem;
@@ -90,206 +226,266 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
 
-    /* ── Calendar section ── */
-    #calendar-section {
+
+    /* ── Combined clock + weather card ── */
+    #info-section {
       width: 100%;
       max-width: 580px;
-      margin-top: 2.5rem;
+      margin-top: 1.4rem;
       font-family: 'Google Sans', Roboto, Arial, sans-serif;
     }
 
-    .search-card {
-      background: #fff;
+    #info-card {
+      background: linear-gradient(135deg, #e0f3ff, #c8e8f5);
       border-radius: 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
-      padding: 24px 28px;
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 0;
     }
 
-    .card-title {
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: 600;
+    #clock-side {
+      flex: 1;
+      font-family: 'Roboto Mono', monospace, sans-serif;
+      border-right: 1px solid rgba(0,0,0,0.08);
+      padding-right: 24px;
+      margin-right: 24px;
+    }
+    #clock-time {
+      font-size: 1.8rem;
+      font-weight: 700;
       color: #202124;
-      margin: 0 0 20px;
-      letter-spacing: -0.3px;
+      line-height: 1;
+      letter-spacing: 0.02em;
     }
-
-    .card-title span.g { color: #4285F4; }
-    .card-title span.o1 { color: #EA4335; }
-    .card-title span.o2 { color: #FBBC05; }
-    .card-title span.g2 { color: #34A853; }
-    .card-title span.l { color: #EA4335; }
-    .card-title span.e { color: #4285F4; }
-
-    /* Load card */
-    #load-card .hint {
-      text-align: center;
-      font-size: 0.82rem;
-      color: #70757a;
-      margin-top: 10px;
+    #clock-date {
+      font-size: 0.75rem;
+      color: #5f6368;
+      margin-top: 4px;
       font-family: Roboto, Arial, sans-serif;
     }
 
-    #load-card .load-row {
-      display: flex;
-      justify-content: center;
+    #weather-side {
+      flex: 1.2;
     }
-
-    .load-btn {
+    #weather-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    #weather-icon { font-size: 1.8rem; line-height: 1; }
+    #weather-temp {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #202124;
+    }
+    #weather-desc {
+      font-size: 0.75rem;
+      color: #5f6368;
+      margin-top: 2px;
+    }
+    #weather-meta {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: #70757a;
+      font-family: Roboto, Arial, sans-serif;
+      flex-wrap: wrap;
+    }
+    #weather-updated {
+      margin-top: 4px;
+      font-size: 0.65rem;
+      color: #aaa;
+      font-family: Roboto, Arial, sans-serif;
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #fff;
-      border: 1px solid #dfe1e5;
-      border-radius: 24px;
-      padding: 10px 22px;
-      font-size: 0.95rem;
-      font-family: Roboto, Arial, sans-serif;
-      color: #3c4043;
-      cursor: pointer;
-      transition: box-shadow 0.15s, border-color 0.15s;
     }
-
-    .load-btn:hover {
-      box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-      border-color: rgba(223,225,229,0);
-    }
-
-    .load-btn svg {
-      flex-shrink: 0;
-    }
-
-    #file-input {
-      display: none;
-    }
-
-    /* Loaded status */
-    #loaded-status {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      background: #e8f5e9;
+    #weather-refresh-btn {
+      background: none;
+      border: 1px solid #b0cfe0;
       border-radius: 12px;
-      padding: 8px 14px;
-      margin-bottom: 16px;
-      font-size: 0.85rem;
-      color: #1e7e34;
-      font-family: Roboto, Arial, sans-serif;
-    }
-
-    #loaded-status .reload-link {
+      padding: 2px 8px;
+      font-size: 0.72rem;
       color: #4285F4;
       cursor: pointer;
-      text-decoration: none;
-      font-size: 0.82rem;
+      font-family: Roboto, Arial, sans-serif;
+      transition: background 0.15s;
+    }
+    #weather-refresh-btn:hover { background: rgba(66,133,244,0.08); }
+    #weather-source {
+      margin-top: 4px;
+      font-size: 0.68rem;
+      color: #aaa;
+      font-family: Roboto, Arial, sans-serif;
+    }
+    #weather-error {
+      color: #70757a;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 0.88rem;
     }
 
-    #loaded-status .reload-link:hover {
-      text-decoration: underline;
+    /* ── Search box ── */
+    #search-section {
+      width: 100%;
+      max-width: 580px;
+      margin-top: 1.8rem;
     }
 
-    /* Search card */
-    #search-card {
-      display: none;
-    }
-
-    .search-row {
+    #search-box {
       display: flex;
-      gap: 10px;
       align-items: center;
-    }
-
-    input[type="date"] {
-      flex: 1;
+      background: #fff;
       border: 1px solid #dfe1e5;
       border-radius: 24px;
       padding: 10px 18px;
-      font-size: 1rem;
-      font-family: Roboto, Arial, sans-serif;
-      color: #3c4043;
-      outline: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       transition: box-shadow 0.15s, border-color 0.15s;
-      background: #fff;
+      gap: 10px;
     }
-
-    input[type="date"]:focus {
-      box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+    #search-box:focus-within {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
       border-color: rgba(223,225,229,0);
     }
 
-    .search-btn {
-      background: #4285F4;
-      color: #fff;
+    #search-icon {
+      color: #9aa0a6;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    #search-input {
+      flex: 1;
       border: none;
-      border-radius: 24px;
-      padding: 10px 22px;
-      font-size: 0.95rem;
-      font-family: Roboto, Arial, sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s, box-shadow 0.15s;
-      white-space: nowrap;
-    }
-
-    .search-btn:hover {
-      background: #3367d6;
-      box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-    }
-
-    .search-btn:active {
-      background: #2a56c6;
-    }
-
-    /* Results */
-    #results {
-      margin-top: 16px;
-    }
-
-    .results-header {
-      font-size: 0.85rem;
-      color: #70757a;
-      font-family: Roboto, Arial, sans-serif;
-      margin-bottom: 10px;
-      padding-left: 4px;
-    }
-
-    .event-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
-      padding: 14px 18px;
-      margin-bottom: 10px;
-      border-left: 4px solid #4285F4;
-    }
-
-    .event-title {
+      outline: none;
       font-size: 1rem;
-      font-weight: 600;
+      font-family: Roboto, Arial, sans-serif;
       color: #202124;
-      font-family: Roboto, Arial, sans-serif;
-      margin-bottom: 4px;
+      background: transparent;
     }
 
-    .event-time {
-      font-size: 0.85rem;
-      color: #70757a;
+    #search-input::placeholder { color: #9aa0a6; }
+
+    #send-btn {
+      background: #4285F4;
+      border: none;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      color: #fff;
+      font-size: 0.75rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #send-btn:hover { background: #3367d6; }
+    #send-btn:disabled { opacity: 0.5; cursor: default; }
+
+    #search-clear {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9aa0a6;
+      font-size: 1.1rem;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    #search-clear:hover { color: #5f6368; }
+
+    #mic-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9aa0a6;
+      font-size: 1.2rem;
+      padding: 0;
+      flex-shrink: 0;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+    #mic-btn:hover { color: #4285F4; }
+    #mic-btn.listening { color: #e74c3c; animation: mic-pulse 1s ease-in-out infinite; }
+    @keyframes mic-pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+    #lang-toggle {
+      background: rgba(66,133,244,0.08);
+      border: 1px solid #c5d8f7;
+      border-radius: 10px;
+      padding: 2px 7px;
+      font-size: 0.7rem;
+      color: #4285F4;
+      cursor: pointer;
       font-family: Roboto, Arial, sans-serif;
-      margin-bottom: 4px;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    #lang-toggle:hover { background: rgba(66,133,244,0.16); }
+
+    #output-area {
+      display: none;
+      background: #fff;
+      border-radius: 16px;
+      margin-top: 10px;
+      padding: 16px 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 1rem;
+      color: #202124;
+      line-height: 1.6;
+      word-break: break-word;
     }
 
-    .event-detail {
-      font-size: 0.82rem;
-      color: #5f6368;
-      font-family: Roboto, Arial, sans-serif;
-      white-space: pre-wrap;
+    #output-label {
+      font-size: 0.75rem;
+      color: #9aa0a6;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .no-results {
-      text-align: center;
-      color: #70757a;
-      font-family: Roboto, Arial, sans-serif;
-      font-size: 0.95rem;
-      padding: 20px 0 8px;
+    #output-spinner {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 2px solid #e8eaed;
+      border-top-color: #4285F4;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #output-text {
+      color: #202124;
+      line-height: 1.7;
+    }
+    #output-text h1, #output-text h2, #output-text h3 {
+      margin: 0.6em 0 0.3em;
+      color: #202124;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+    }
+    #output-text h1 { font-size: 1.2rem; }
+    #output-text h2 { font-size: 1.05rem; }
+    #output-text h3 { font-size: 0.95rem; }
+    #output-text p  { margin: 0.4em 0; }
+    #output-text ul, #output-text ol { margin: 0.3em 0; padding-left: 1.4em; }
+    #output-text li { margin: 0.2em 0; }
+    #output-text strong { color: #202124; }
+    #output-text code {
+      background: #f1f3f4;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.88em;
     }
   </style>
 </head>
@@ -308,48 +504,119 @@
     <span style="color:#00bcd4; animation-delay:0.9s;">d</span>
   </div>
 
-  <div id="calendar-section">
-    <!-- Step 1: load .ics file -->
-    <div class="search-card" id="load-card">
-      <p class="card-title">
-        <span class="g">C</span><span class="o1">a</span><span class="o2">l</span><span class="g2">e</span><span class="l">n</span><span class="e">d</span><span class="g">a</span><span class="o1">r</span>&nbsp;<span class="o2">S</span><span class="g2">e</span><span class="l">a</span><span class="e">r</span><span class="g">c</span><span class="o1">h</span>
-      </p>
-      <div class="load-row">
-        <button class="load-btn" onclick="document.getElementById('file-input').click()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
-          Load Calendar (.ics)
-        </button>
-        <input type="file" id="file-input" accept=".ics" multiple onchange="handleFiles(this)">
+  <div id="info-section">
+    <div id="info-card">
+      <div id="clock-side">
+        <div id="clock-time">--:--:--</div>
+        <div id="clock-date">---</div>
       </div>
-      <p class="hint">macOS Calendar app → File → Export → Export…</p>
+      <div id="weather-side">
+        <div id="weather-content">
+          <div id="weather-error">📍 Getting location…</div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Step 2: search (shown after loading) -->
-    <div class="search-card" id="search-card">
-      <p class="card-title">
-        <span class="g">C</span><span class="o1">a</span><span class="o2">l</span><span class="g2">e</span><span class="l">n</span><span class="e">d</span><span class="g">a</span><span class="o1">r</span>&nbsp;<span class="o2">S</span><span class="g2">e</span><span class="l">a</span><span class="e">r</span><span class="g">c</span><span class="o1">h</span>
-      </p>
-      <div id="loaded-status">
-        <span id="loaded-label">✓ Calendar loaded</span>
-        <a class="reload-link" onclick="reloadCalendar()">Load different file</a>
+  <div id="search-section">
+    <div id="search-box">
+      <span id="search-icon">🔍</span>
+      <input id="search-input" type="text" placeholder="Ask me anything…" autocomplete="off"
+             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitQuery();}">
+      <button id="lang-toggle" onclick="toggleLang()" title="Switch language">EN</button>
+      <button id="mic-btn" onclick="toggleMic()" title="Voice input">🎤</button>
+      <button id="send-btn" onclick="submitQuery()" title="Ask">▶</button>
+      <button id="search-clear" onclick="clearSearch()" title="Clear">✕</button>
+    </div>
+    <div id="output-area">
+      <div id="output-label">
+        <span>Answer</span>
+        <span id="output-spinner" style="display:none"></span>
       </div>
-      <div class="search-row">
-        <input type="date" id="date-input" onkeydown="if(event.key==='Enter') doSearch()">
-        <button class="search-btn" onclick="doSearch()">Search</button>
-      </div>
-      <div id="results"></div>
+      <div id="output-text"></div>
     </div>
   </div>
 
   <a id="contacts-btn" href="contacts.html">Contacts</a>
+  <a id="sp500-btn" href="sp500.html">S&amp;P 500</a>
+  <a id="sql-btn" href="search.html">SQL Search</a>
+  <a id="news-btn" href="news.html">News</a>
+  <a id="cal-btn" href="calendar.html">Calendar</a>
+  <a id="products-btn" href="products.html">Products</a>
+  <button id="logout-btn" onclick="doLogout()">Sign Out</button>
   <button id="bg-btn" onclick="cycleBackground()">Change Background</button>
 
   <script>
+    // ── LLM Ask ──
+    let currentController = null;
+
+    async function submitQuery() {
+      const val = document.getElementById('search-input').value.trim();
+      if (!val) return;
+
+      if (currentController) currentController.abort();
+      currentController = new AbortController();
+
+      const output  = document.getElementById('output-area');
+      const textEl  = document.getElementById('output-text');
+      const spinner = document.getElementById('output-spinner');
+      const sendBtn = document.getElementById('send-btn');
+      const clear   = document.getElementById('search-clear');
+
+      output.style.display  = 'block';
+      textEl.innerHTML      = '';
+      spinner.style.display = 'inline-block';
+      sendBtn.disabled      = true;
+      clear.style.display   = 'inline';
+
+      try {
+        const res = await fetch('http://localhost:5001/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: val }),
+          signal: currentController.signal,
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          textEl.textContent = 'Error: ' + (err.error || res.status);
+          return;
+        }
+
+        const reader  = res.body.getReader();
+        const decoder = new TextDecoder();
+        let full = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          full += decoder.decode(value, { stream: true });
+          textEl.innerHTML = marked.parse(full);
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') {
+          textEl.textContent = 'Cannot reach server. Make sure server.py is running.';
+        }
+      } finally {
+        spinner.style.display = 'none';
+        sendBtn.disabled      = false;
+      }
+    }
+
+    function clearSearch() {
+      if (currentController) { currentController.abort(); currentController = null; }
+      document.getElementById('search-input').value        = '';
+      document.getElementById('output-area').style.display = 'none';
+      document.getElementById('search-clear').style.display = 'none';
+      document.getElementById('output-spinner').style.display = 'none';
+      document.getElementById('send-btn').disabled          = false;
+      document.getElementById('search-input').focus();
+    }
+
+    async function doLogout() {
+      await fetch('http://localhost:5001/auth/logout', { method: 'POST', credentials: 'include' });
+      window.location.href = 'http://localhost:5001/login.html';
+    }
+
     // ── Background cycle ──
     const colors = ['#ff0000','#ff7700','#ffff00','#00cc00','#0000ff','#4b0082','#8b00ff'];
     let current = 0;
@@ -358,163 +625,185 @@
       document.body.style.background = colors[current];
     }
 
-    // ── Calendar ──
-    let events = [];
+    // ── Request all permissions on load ──
+    async function requestAllPermissions() {
+      // Microphone + Camera
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        stream.getTracks().forEach(t => t.stop()); // release immediately after grant
+      } catch (e) {
+        // user denied or device unavailable — non-fatal
+      }
+      // Location is requested by initWeather() below
+    }
+    requestAllPermissions();
 
-    function handleFiles(input) {
-      const files = Array.from(input.files);
-      if (!files.length) return;
-      events = [];
-      let remaining = files.length;
-      for (const file of files) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          events = events.concat(parseICS(e.target.result));
-          if (--remaining === 0) {
-            const names = files.length === 1
-              ? files[0].name
-              : files.length + ' calendars';
-            showSearchCard(names, events.length);
+    // ── Weather ──
+    const WMO = {
+      0:['☀️','Clear sky'], 1:['🌤','Mainly clear'], 2:['⛅','Partly cloudy'], 3:['☁️','Overcast'],
+      45:['🌫','Foggy'], 48:['🌫','Icy fog'],
+      51:['🌦','Light drizzle'], 53:['🌦','Drizzle'], 55:['🌧','Heavy drizzle'],
+      61:['🌧','Light rain'], 63:['🌧','Rain'], 65:['🌧','Heavy rain'],
+      71:['🌨','Light snow'], 73:['🌨','Snow'], 75:['❄️','Heavy snow'],
+      77:['🌨','Snow grains'], 80:['🌦','Rain showers'], 81:['🌧','Heavy showers'],
+      82:['⛈','Violent showers'], 85:['🌨','Snow showers'], 86:['❄️','Heavy snow showers'],
+      95:['⛈','Thunderstorm'], 96:['⛈','Thunderstorm w/ hail'], 99:['⛈','Severe thunderstorm'],
+    };
+    const WEATHER_TTL = 2 * 60 * 60 * 1000; // 2 hours
+
+    async function initWeather() {
+      const cached = localStorage.getItem('weather_cache_v2');
+      if (cached) {
+        const obj = JSON.parse(cached);
+        if (Date.now() - obj.ts < WEATHER_TTL) {
+          renderWeather(obj);
+          // Schedule next refresh at expiry
+          setTimeout(refreshWeather, WEATHER_TTL - (Date.now() - obj.ts));
+          return;
+        }
+      }
+      refreshWeather();
+    }
+
+    function refreshWeather() {
+      if (!navigator.geolocation) {
+        showWeatherError('Geolocation not supported by this browser.');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async pos => {
+          const { latitude: lat, longitude: lon } = pos.coords;
+          try {
+            const [weather, geo] = await Promise.all([
+              fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m,relative_humidity_2m&temperature_unit=fahrenheit&wind_speed_unit=mph`).then(r => r.json()),
+              fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`).then(r => r.json())
+            ]);
+            const city = geo.address?.city || geo.address?.town || geo.address?.village || geo.address?.county || '';
+            const state = geo.address?.state_code || geo.address?.state || '';
+            const obj = {
+              ts: Date.now(),
+              tempF: Math.round(weather.current.temperature_2m),
+              tempC: Math.round((weather.current.temperature_2m - 32) * 5 / 9),
+              code: weather.current.weathercode,
+              wind: Math.round(weather.current.windspeed_10m),
+              humidity: weather.current.relative_humidity_2m,
+              location: [city, state].filter(Boolean).join(', '),
+            };
+            localStorage.setItem('weather_cache_v2', JSON.stringify(obj));
+            renderWeather(obj);
+            setTimeout(refreshWeather, WEATHER_TTL);
+          } catch (e) {
+            showWeatherError('Unable to load weather data.');
           }
-        };
-        reader.readAsText(file);
-      }
+        },
+        () => showWeatherError('Location permission denied.')
+      );
     }
 
-    function reloadCalendar() {
-      document.getElementById('search-card').style.display = 'none';
-      document.getElementById('load-card').style.display = 'block';
-      document.getElementById('file-input').value = '';
-      document.getElementById('results').innerHTML = '';
-      events = [];
+    function renderWeather(obj) {
+      const [icon, desc] = WMO[obj.code] || ['🌡️', 'Unknown'];
+      const updated = new Date(obj.ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      document.getElementById('weather-content').innerHTML =
+        `<div id="weather-main">
+          <div id="weather-icon">${icon}</div>
+          <div>
+            <div id="weather-temp">${obj.tempF}°F / ${obj.tempC}°C &nbsp;💧 ${obj.humidity}%</div>
+            <div id="weather-desc">${desc}</div>
+          </div>
+        </div>
+        <div id="weather-meta">
+          <span>💨 ${obj.wind} mph</span>
+          ${obj.location ? `<span>📍 ${escHtml(obj.location)}</span>` : ''}
+        </div>
+        <div id="weather-updated">
+          <span>Updated ${updated} · auto-refreshes every 2 hrs</span>
+          <button id="weather-refresh-btn" onclick="forceRefreshWeather()">↻ Refresh</button>
+        </div>
+        <div id="weather-source">Data: <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:#4285F4;text-decoration:none;">Open-Meteo</a> · <a href="https://nominatim.org" target="_blank" rel="noopener" style="color:#4285F4;text-decoration:none;">Nominatim</a></div>`;
     }
 
-    function showSearchCard(filename, count) {
-      document.getElementById('load-card').style.display = 'none';
-      const sc = document.getElementById('search-card');
-      sc.style.display = 'block';
-      const ls = document.getElementById('loaded-status');
-      ls.style.display = 'flex';
-      document.getElementById('loaded-label').textContent =
-        '✓ ' + count + ' event' + (count !== 1 ? 's' : '') + ' loaded from ' + filename;
+    function forceRefreshWeather() {
+      localStorage.removeItem('weather_cache_v2');
+      document.getElementById('weather-content').innerHTML = '<div id="weather-error">📍 Getting location…</div>';
+      refreshWeather();
     }
 
-    // ── ICS parser ──
-    function parseICS(text) {
-      // Unfold continuation lines (RFC 5545 §3.1)
-      text = text.replace(/\r\n[ \t]/g, '').replace(/\r/g, '');
-
-      const results = [];
-      const blocks = text.split('BEGIN:VEVENT');
-      for (let i = 1; i < blocks.length; i++) {
-        const block = blocks[i];
-        const get = key => {
-          // Match key or key;PARAM=...:value
-          const m = block.match(new RegExp('^' + key + '(?:;[^:]*)?:(.*)$', 'm'));
-          return m ? m[1].trim() : '';
-        };
-
-        const rawStart = getRawProp(block, 'DTSTART');
-        const rawEnd   = getRawProp(block, 'DTEND');
-        const parsed   = parseDT(rawStart);
-        if (!parsed) continue;
-
-        results.push({
-          summary:     get('SUMMARY').replace(/\\,/g, ',').replace(/\\n/g, '\n').replace(/\\;/g, ';'),
-          dateStr:     parsed.dateStr,
-          timeStr:     parsed.timeStr,
-          endTimeStr:  parseDT(rawEnd)?.timeStr || null,
-          location:    get('LOCATION').replace(/\\,/g, ',').replace(/\\n/g, '\n'),
-          description: get('DESCRIPTION').replace(/\\,/g, ',').replace(/\\n/g, '\n').replace(/\\;/g, ';'),
-        });
-      }
-      return results;
+    function showWeatherError(msg) {
+      document.getElementById('weather-content').innerHTML =
+        `<div id="weather-error">${msg}</div>`;
     }
 
-    function getRawProp(block, key) {
-      // Returns the value portion including any VALUE=DATE or TZID params
-      const m = block.match(new RegExp('^' + key + '(?:;[^:]*)?:(.*)$', 'm'));
-      return m ? m[1].trim() : '';
-    }
-
-    function parseDT(raw) {
-      if (!raw) return null;
-      // All-day: YYYYMMDD
-      if (/^\d{8}$/.test(raw)) {
-        const y = raw.slice(0,4), mo = raw.slice(4,6), d = raw.slice(6,8);
-        return { dateStr: y + '-' + mo + '-' + d, timeStr: null };
-      }
-      // Datetime: YYYYMMDDTHHmmss[Z]
-      const m = raw.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/);
-      if (m) {
-        const [,y,mo,d,h,min,,z] = m;
-        if (z === 'Z') {
-          // Convert UTC to local
-          const dt = new Date(Date.UTC(+y,+mo-1,+d,+h,+min,0));
-          const ly = dt.getFullYear(), lmo = String(dt.getMonth()+1).padStart(2,'0');
-          const ld = String(dt.getDate()).padStart(2,'0');
-          const lh = String(dt.getHours()).padStart(2,'0');
-          const lmin = String(dt.getMinutes()).padStart(2,'0');
-          return { dateStr: ly+'-'+lmo+'-'+ld, timeStr: lh+':'+lmin };
-        }
-        return { dateStr: y+'-'+mo+'-'+d, timeStr: h+':'+min };
-      }
-      return null;
-    }
-
-    // ── Search ──
-    function doSearch() {
-      const dateVal = document.getElementById('date-input').value;
-      if (!dateVal) {
-        document.getElementById('results').innerHTML =
-          '<p class="no-results">Please select a date.</p>';
-        return;
-      }
-      const matched = events.filter(e => e.dateStr === dateVal);
-      renderResults(matched, dateVal);
-      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function renderResults(evts, dateVal) {
-      const container = document.getElementById('results');
-      if (evts.length === 0) {
-        const d = new Date(dateVal + 'T00:00:00');
-        const label = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-        container.innerHTML = '<p class="no-results">No events found for ' + label + '.</p>';
-        return;
-      }
-
-      const d = new Date(dateVal + 'T00:00:00');
-      const label = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-      let html = '<p class="results-header">' + evts.length + ' event' + (evts.length !== 1 ? 's' : '') + ' on ' + label + '</p>';
-
-      for (const ev of evts) {
-        let timeLabel = 'All day';
-        if (ev.timeStr) {
-          timeLabel = formatTime(ev.timeStr);
-          if (ev.endTimeStr) timeLabel += ' – ' + formatTime(ev.endTimeStr);
-        }
-
-        html += '<div class="event-card">';
-        html += '<div class="event-title">' + escHtml(ev.summary || '(No title)') + '</div>';
-        html += '<div class="event-time">🕐 ' + escHtml(timeLabel) + '</div>';
-        if (ev.location) html += '<div class="event-detail">📍 ' + escHtml(ev.location) + '</div>';
-        if (ev.description) html += '<div class="event-detail">📝 ' + escHtml(ev.description) + '</div>';
-        html += '</div>';
-      }
-
-      container.innerHTML = html;
-    }
-
-    function formatTime(t) {
-      const [h, m] = t.split(':').map(Number);
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      const h12 = h % 12 || 12;
-      return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
-    }
+    initWeather();
 
     function escHtml(s) {
       return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function tickClock() {
+      const now  = new Date();
+      const hh   = String(now.getHours()).padStart(2, '0');
+      const mm   = String(now.getMinutes()).padStart(2, '0');
+      const ss   = String(now.getSeconds()).padStart(2, '0');
+      const timeStr = `${hh}:${mm}:${ss}`;
+      const dateStr = now.toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+      document.getElementById('clock-time').textContent = timeStr;
+      document.getElementById('clock-date').textContent = dateStr;
+      document.title = `${timeStr} · Hello World`;
+    }
+    tickClock();
+    setInterval(tickClock, 1000);
+
+    // ── Voice input ──
+    let recognition = null;
+    let isListening = false;
+    let voiceLang = 'en-US';
+
+    function toggleLang() {
+      voiceLang = (voiceLang === 'en-US') ? 'zh-CN' : 'en-US';
+      const btn = document.getElementById('lang-toggle');
+      btn.textContent = (voiceLang === 'zh-CN') ? '中' : 'EN';
+      const input = document.getElementById('search-input');
+      input.placeholder = (voiceLang === 'zh-CN') ? '问我任何问题…' : 'Ask me anything…';
+      if (isListening) { stopMic(); }
+    }
+
+    function toggleMic() {
+      if (isListening) { stopMic(); return; }
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { alert('Voice input is not supported in this browser. Try Chrome.'); return; }
+      recognition = new SR();
+      recognition.lang = voiceLang;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+      const micBtn = document.getElementById('mic-btn');
+      const input  = document.getElementById('search-input');
+      recognition.onstart = () => {
+        isListening = true;
+        micBtn.classList.add('listening');
+        micBtn.title = 'Stop listening';
+      };
+      recognition.onresult = e => {
+        const transcript = Array.from(e.results)
+          .map(r => r[0].transcript).join('');
+        input.value = transcript;
+        if (e.results[e.results.length - 1].isFinal) {
+          stopMic();
+          submitQuery();
+        }
+      };
+      recognition.onerror = () => stopMic();
+      recognition.onend   = () => stopMic();
+      recognition.start();
+    }
+
+    function stopMic() {
+      isListening = false;
+      if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
+      const micBtn = document.getElementById('mic-btn');
+      micBtn.classList.remove('listening');
+      micBtn.title = 'Voice input';
     }
   </script>
 </body>
